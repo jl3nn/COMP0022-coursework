@@ -35,10 +35,10 @@ function App() {
   useEffect(() => {
     // Fetch data from Flask endpoints when the component mounts
     const fetchData = async () => {
-      const ratingsResponse = await fetch('http://localhost:5000/ratings');
-      const tagsResponse = await fetch('http://localhost:5000/tags');
-      const moviesResponse = await fetch('http://localhost:5000/movies');
-      const linksResponse = await fetch('http://localhost:5000/links');
+      const ratingsResponse = await fetch('http://localhost:5555/ratings', { mode: 'cors' });
+      const tagsResponse = await fetch('http://localhost:5555/tags', { mode: 'cors' });
+      const moviesResponse = await fetch('http://localhost:5555/movies', { mode: 'cors' });
+      const linksResponse = await fetch('http://localhost:5555/links', { mode: 'cors' });
 
       const ratingsData: Rating[] = await ratingsResponse.json();
       const tagsData: Tag[] = await tagsResponse.json();
@@ -66,6 +66,7 @@ function App() {
       <tbody>
         {data.map((row, index) => (
           <tr key={index}>
+            {<>{console.log(row)}</>}
             {headers.map(header => (
               <td key={header}>{row[header]}</td>
             ))}

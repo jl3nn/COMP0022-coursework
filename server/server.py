@@ -3,14 +3,15 @@ from flask_cors import CORS, cross_origin
 import psycopg2
 
 app = Flask(__name__)
-CORS(app)
+app = Flask(__name__)
+cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 db_params = {
     'dbname': 'comp0022',
     'user': 'admin',
     'password': 'top_secret_password',
-    'host': 'localhost',
+    'host': 'database',
     'port': '5432'
 }
 
@@ -22,11 +23,13 @@ def execute_query(query):
     conn.close()
     return result
 
-@app.route('/')
+@app.route("/")
+@cross_origin()
 def hello_world():
     return 'Hello, World!'
 
 @app.route('/ratings')
+@cross_origin()
 def get_ratings():
     query = "SELECT * FROM ratings LIMIT 5;"
     result = execute_query(query)
@@ -34,6 +37,7 @@ def get_ratings():
     return jsonify(result)
 
 @app.route('/tags')
+@cross_origin()
 def get_tags():
     query = "SELECT * FROM tags LIMIT 5;"
     result = execute_query(query)
@@ -41,6 +45,7 @@ def get_tags():
     return jsonify(result)
 
 @app.route('/movies')
+@cross_origin()
 def get_movies():
     query = "SELECT * FROM movies LIMIT 5;"
     result = execute_query(query)
@@ -48,6 +53,7 @@ def get_movies():
     return jsonify(result)
 
 @app.route('/links')
+@cross_origin()
 def get_links():
     query = "SELECT * FROM links LIMIT 5;"
     result = execute_query(query)
