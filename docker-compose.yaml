@@ -1,0 +1,32 @@
+version: '3'
+services:
+  database:
+    build:
+      context: ./database
+    ports:
+      - "5432:5432"
+    networks:
+      - backend
+
+  server:
+    build:
+      context: ./server
+    ports:
+      - "5555:5555"
+    networks:
+      - backend
+    depends_on:
+      - database
+
+  client:
+    build:
+      context: ./client
+    ports:
+      - "80:80"
+    networks:
+      - backend
+    depends_on:
+      - server
+
+networks:
+  backend:
