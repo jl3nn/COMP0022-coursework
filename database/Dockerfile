@@ -11,7 +11,7 @@ WORKDIR /docker-entrypoint-initdb.d
 
 # Copy SQL scripts and CSV files to the container
 COPY init.sql .
-COPY data.csv .
+COPY *.csv .
 
 # Expose the PostgreSQL port
 EXPOSE 5432
