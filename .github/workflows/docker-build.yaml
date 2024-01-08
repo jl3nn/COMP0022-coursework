@@ -12,4 +12,4 @@ jobs:
 
       - name: Build containers
         run: |
-          docker-compose -f COMP0022-coursework/docker-compose.yaml build
+          docker-compose -f docker-compose.yaml build
