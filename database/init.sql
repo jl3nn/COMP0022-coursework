@@ -1,37 +1,31 @@
 CREATE TABLE movies (
     movieId INT,
-    title VARCHAR(255),
-    genres VARCHAR(255)
-    -- PRIMARY KEY (movieId)
+    title VARCHAR(255) NOT NULL,
+    genres VARCHAR(255) NOT NULL,
+    imdbId INT, 
+    tmdbId INT,
+    PRIMARY KEY (movieId)
 );
 
 CREATE TABLE ratings (
     userId INT,
     movieId INT,
-    rating FLOAT,
-    timestamp INT
-    -- PRIMARY KEY (userId, movieId),
-    -- FOREIGN KEY (movieId) REFERENCES movies(movieId)
+    rating FLOAT NOT NULL,
+    timestamp TIMESTAMP NOT NULL,
+    PRIMARY KEY(userId, movieId),
+    FOREIGN KEY(movieId) REFERENCES movies(movieId)
 );
 
 CREATE TABLE tags (
-    userId INT,
-    movieId INT,
-    tag VARCHAR(255),
-    timestamp INT
-    -- PRIMARY KEY (userId, movieId, timestamp),
-    -- FOREIGN KEY (movieId) REFERENCES movies(movieId)
+    tagId SERIAL,
+    userId INT NOT NULL,
+    movieId INT NOT NULL,
+    tag VARCHAR(255) NOT NULL,
+    timestamp TIMESTAMP NOT NULL,
+    PRIMARY KEY(tagId),
+    FOREIGN KEY(movieId) REFERENCES movies(movieId)
 );
 
-CREATE TABLE links (
-    movieId INT,
-    imdbId VARCHAR(20),
-    tmdbId INT
-    -- PRIMARY KEY (movieId),
-    -- FOREIGN KEY (movieId) REFERENCES movies(movieId)
-);
-
-COPY movies FROM '/docker-entrypoint-initdb.d/movies.csv' DELIMITER ',' CSV HEADER;
-COPY ratings FROM '/docker-entrypoint-initdb.d/ratings.csv' DELIMITER ',' CSV HEADER;
-COPY tags FROM '/docker-entrypoint-initdb.d/tags.csv' DELIMITER ',' CSV HEADER;
-COPY links FROM '/docker-entrypoint-initdb.d/links.csv' DELIMITER ',' CSV HEADER;
+COPY movies (movieId, title, genres, imdbId, tmdbId) FROM '/docker-entrypoint-initdb.d/movies.csv' DELIMITER ',' CSV HEADER;
+COPY ratings (userId, movieId, rating, timestamp) FROM '/docker-entrypoint-initdb.d/ratings.csv' DELIMITER ',' CSV HEADER;
+COPY tags (userId, movieId, tag, timestamp) FROM '/docker-entrypoint-initdb.d/tags.csv' DELIMITER ',' CSV HEADER;
