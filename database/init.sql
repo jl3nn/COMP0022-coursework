@@ -4,6 +4,7 @@ CREATE TABLE movies (
     genres VARCHAR(255) NOT NULL,
     imdbId INT, 
     tmdbId INT,
+    imageUrl VARCHAR(255),
     PRIMARY KEY (movieId)
 );
 
