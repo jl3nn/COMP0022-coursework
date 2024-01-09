@@ -7,6 +7,9 @@ services:
       - "5432:5432"
     networks:
       - backend
+    volumes:
+      - db_init:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/postgresql/data
 
   server:
     build:
@@ -30,3 +33,7 @@ services:
 
 networks:
   backend:
+
+volumes:
+  db_init:
+  db_data:
