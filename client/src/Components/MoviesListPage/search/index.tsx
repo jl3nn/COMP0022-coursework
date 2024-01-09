@@ -5,6 +5,7 @@ import FilterIcon from '@mui/icons-material/FilterList';
 import Autocomplete from '@mui/material/Autocomplete';
 import Drawer from '@mui/material/Drawer';
 import { useSearch } from '../SearchContext/context';
+import AutocompleteWithFetch from '../../common/AutocompleteSelector';
 
 const SearchComponent = () => {
   const [data, setData] = useState([] as string[]);
@@ -82,60 +83,36 @@ const SearchDrawer = ({isFilterDrawerOpen, handleFilterDrawerClose}: any) => {
     const [tagText, setTagText] = useState('');
     const [genreText, setGenreText] = useState('');
 
-    useEffect(() => {
-        fetch(`http://localhost:5555/tags-autocomplete?prefix=${tagText}`, {  mode: 'cors'}).then((response) => {
-            response.json().then((data) => {
-                setTagOptions(data)
-            })
-        })
-    }, [tagText]);
-
-    useEffect(() => {
-        fetch(`http://localhost:5555/genre-autocomplete?prefix=${genreText}`, {  mode: 'cors'}).then((response) => {
-            response.json().then((data) => {
-                setGenreOptions(data)
-            })
-        })
-    }, [genreText]);
-
     return (
-    <Drawer anchor="right" open={isFilterDrawerOpen} onClose={handleFilterDrawerClose}>
-        <Box margin={3}>
-        <Typography variant="h4" sx={{'marginX': 'auto'}}>Search Filters</Typography>
-        <Stack spacing={4} sx={{ p: 2, width: 250 }}>
-            <Box>
-                <Typography>Rating:</Typography>
-                <Slider
-                    value={ratings}
-                    onChange={(_, val) => setRatingFilter(val as [number, number])}
-                    valueLabelDisplay="auto"
-                    min={0}
-                    max={10}
-                    marks={[{ value: 0, label: '0' }, { value: 10, label: '10' }]}
+        <Drawer anchor="right" open={isFilterDrawerOpen} onClose={handleFilterDrawerClose}>
+            <Box margin={3}>
+            <Typography variant="h4" sx={{'marginX': 'auto'}}>Search Filters</Typography>
+            <Stack spacing={4} sx={{ p: 2, width: 250 }}>
+                <Box>
+                    <Typography>Rating:</Typography>
+                    <Slider
+                        value={ratings}
+                        onChange={(_, val) => setRatingFilter(val as [number, number])}
+                        valueLabelDisplay="auto"
+                        min={0}
+                        max={10}
+                        marks={[{ value: 0, label: '0' }, { value: 10, label: '10' }]}
+                    />
+                </Box>
+                <AutocompleteWithFetch
+                    apiUrl="http://localhost:5555/genre-autocomplete"
+                    onChange={(_, newValue) => setGenresFilter(newValue)}
+                    label="Genre"
                 />
+                <AutocompleteWithFetch
+                    apiUrl="http://localhost:5555/tags-autocomplete"
+                    onChange={(_, newValues) => setTagsFilter(newValues)}
+                    label="Tags"
+                />
+            </Stack>
+            <Button onClick={resetFilters}>Reset Filters</Button>
             </Box>
-            <Autocomplete
-                multiple
-                options={genreOptions}
-                value={genres}
-                inputValue={genreText}
-                onInputChange={(_, newValue) => setGenreText(newValue)}
-                onChange={(_, newValue) => setGenresFilter(newValue)}
-                renderInput={(params) => <TextField {...params} label="Genre" />}
-            />
-            <Autocomplete
-                multiple
-                options={tagOptions}
-                value={tags}
-                inputValue={tagText}
-                onInputChange={(_, newValue) => setTagText(newValue)}
-                onChange={(_, newValues) => setTagsFilter(newValues)}
-                renderInput={(params) => <TextField {...params} label="Tags" />}
-            />
-        </Stack>
-        <Button onClick={resetFilters}>Reset Filters</Button>
-        </Box>
-      </Drawer>
+        </Drawer>
     );
 }
 

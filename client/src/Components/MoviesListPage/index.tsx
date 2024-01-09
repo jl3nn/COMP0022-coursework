@@ -1,7 +1,7 @@
 // App.js
 import React, { useEffect, useState } from 'react';
 import { SearchProvider, useSearch } from './SearchContext/context';
-import MovieCard from './MovieCard';
+import MovieCard from '../common/MovieCard';
 import { Paper, Stack } from '@mui/material';
 import SearchComponent from './search';
 
@@ -69,7 +69,7 @@ function MovieListPage() {
     return (
         <Stack spacing={2} alignItems="center" margin={5}>
                 <SearchComponent/>
-                <Paper sx={{maxHeight: 'calc(100vh - 200px)', overflow:"auto",  width:600}}>
+                <Paper sx={{maxHeight: 'calc(100vh - 250px)', overflow:"auto",  width:600}}>
                     <MovieCards data={data} />
                 </Paper>
         </Stack>

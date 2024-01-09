@@ -48,7 +48,7 @@ def get_search_results():
             'genre': 'Bar',
             'tags': ['bla'],
             'ratingsList': [1, 2, 3, 4, 5]
-        }]
+        } for _ in range(10)]
         return jsonify(result_data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
