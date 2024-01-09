@@ -4,11 +4,14 @@ import { Autocomplete, TextField } from '@mui/material';
 
 type CompleteWithFetchProps = {
     apiUrl: string;
-    onChange: (event: React.ChangeEvent<{}>, value: string[]) => void;
+    onChange: any;
+    value: any;
     label: string;
+    multiple?: boolean;
+    disabled?: boolean;
 };
 
-const AutocompleteWithFetch = ({ apiUrl, onChange, label } : CompleteWithFetchProps) => {
+const AutocompleteWithFetch = ({ apiUrl, disabled, onChange, label, value, multiple } : CompleteWithFetchProps) => {
   const [fetchOptions, setFetchOptions] = useState([] as string[]);
   const [inputValue, setInputValue] = useState('');
 
@@ -20,12 +23,15 @@ const AutocompleteWithFetch = ({ apiUrl, onChange, label } : CompleteWithFetchPr
 
   return (
     <Autocomplete
-      multiple
-      options={fetchOptions}
-      inputValue={inputValue}
-      onInputChange={(_, val) => setInputValue(val)}
-      onChange={onChange}
-      renderInput={(params) => <TextField {...params} label={label} />}
+        disabled={disabled}
+        fullWidth
+        multiple={multiple}
+        options={fetchOptions}
+        inputValue={inputValue}
+        value={value}
+        onInputChange={(_, val) => setInputValue(val)}
+        onChange={onChange}
+        renderInput={(params) => <TextField {...params} label={label} />}
     />
   );
 };

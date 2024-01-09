@@ -1,9 +1,9 @@
 // App.js
 import React, { useEffect, useState } from 'react';
-import { SearchProvider, useSearch } from './SearchContext/context';
-import MovieCard from '../common/MovieCard';
+import { useSearch } from './SearchContext/context';
 import { Paper, Stack } from '@mui/material';
 import SearchComponent from './search';
+import MovieCards from '../common/MovieCard';
 
 type Movie = {
     imageUrl: string;
@@ -74,24 +74,6 @@ function MovieListPage() {
                 </Paper>
         </Stack>
     );
-}
-
-function MovieCards({ data } : { data : any[]}) {
-    return (
-        <Stack spacing={2}>
-            {data.map((movie) => (
-                <MovieCard
-                    imageUrl={movie.imageUrl}
-                    title={movie.title}
-                    rating={movie.rating}
-                    genre={movie.genre}
-                    tags={movie.tags}
-                    ratingsList={movie.ratingsList}
-                />
-            )
-            )}
-        </Stack>
-    )
 }
 
 export default MovieListPage;

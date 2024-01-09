@@ -142,4 +142,22 @@ const MovieCard: React.FC<MovieCardProps> = ({
     );
 };
 
-export default MovieCard;
+function MovieCards({ data } : { data : any[]}) {
+    return (
+        <Stack spacing={2}>
+            {data.map((movie) => (
+                <MovieCard
+                    imageUrl={movie.imageUrl}
+                    title={movie.title}
+                    rating={movie.rating}
+                    genre={movie.genre}
+                    tags={movie.tags}
+                    ratingsList={movie.ratingsList}
+                />
+            )
+            )}
+        </Stack>
+    )
+}
+
+export default MovieCards;

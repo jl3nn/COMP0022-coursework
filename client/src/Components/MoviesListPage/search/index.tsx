@@ -99,16 +99,8 @@ const SearchDrawer = ({isFilterDrawerOpen, handleFilterDrawerClose}: any) => {
                         marks={[{ value: 0, label: '0' }, { value: 10, label: '10' }]}
                     />
                 </Box>
-                <AutocompleteWithFetch
-                    apiUrl="http://localhost:5555/genre-autocomplete"
-                    onChange={(_, newValue) => setGenresFilter(newValue)}
-                    label="Genre"
-                />
-                <AutocompleteWithFetch
-                    apiUrl="http://localhost:5555/tags-autocomplete"
-                    onChange={(_, newValues) => setTagsFilter(newValues)}
-                    label="Tags"
-                />
+                <AutocompleteWithFetch value={genres} label="Genres" multiple apiUrl="http://localhost:5555/genre-autocomplete" onChange={(_: any, newValue: any) => setGenresFilter(newValue)} />
+                <AutocompleteWithFetch value={tags} label="Tags" multiple apiUrl="http://localhost:5555/tags-autocomplete" onChange={(_: any, newValue: any) => setTagOptions(newValue)} />
             </Stack>
             <Button onClick={resetFilters}>Reset Filters</Button>
             </Box>

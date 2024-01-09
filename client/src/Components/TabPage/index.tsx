@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { AppBar, Box, Container, Tab, Tabs, Typography } from '@mui/material';
-import { Movie } from '@mui/icons-material';
+import React from 'react';
+import { Box, Tab, Tabs } from '@mui/material';
 import MovieListPage from '../MoviesListPage';
 import RankingsPage from '../RankingsPage';
 import UserReportPage from '../UserReport';
@@ -27,7 +26,7 @@ function CustomTabPanel(props: TabPanelProps) {
     >
       {value === index && (
         <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
+            {children}
         </Box>
       )}
     </div>
