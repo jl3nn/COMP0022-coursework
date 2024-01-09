@@ -6,6 +6,8 @@ from flask import request
 app = Flask(__name__)
 app = Flask(__name__)
 cors = CORS(app)
+app = Flask(__name__)
+cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 db_params = {
