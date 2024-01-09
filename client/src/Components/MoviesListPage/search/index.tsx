@@ -95,7 +95,8 @@ const SearchDrawer = ({isFilterDrawerOpen, handleFilterDrawerClose}: any) => {
                         onChange={(_, val) => setRatingFilter(val as [number, number])}
                         valueLabelDisplay="auto"
                         min={0}
-                        max={10}
+                        max={5}
+                        step={0.5}
                         marks={[{ value: 0, label: '0' }, { value: 10, label: '10' }]}
                     />
                 </Box>
