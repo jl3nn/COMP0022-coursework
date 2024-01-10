@@ -27,6 +27,6 @@ CREATE TABLE tags (
     FOREIGN KEY(movieId) REFERENCES movies(movieId)
 );
 
-COPY movies (movieId, title, genres, imdbId, tmdbId) FROM '/docker-entrypoint-initdb.d/movies.csv' DELIMITER ',' CSV HEADER;
+COPY movies (movieId, title, genres, imdbId, tmdbId, imageUrl) FROM '/docker-entrypoint-initdb.d/movies.csv' DELIMITER ',' CSV HEADER;
 COPY ratings (userId, movieId, rating, timestamp) FROM '/docker-entrypoint-initdb.d/ratings.csv' DELIMITER ',' CSV HEADER;
 COPY tags (userId, movieId, tag, timestamp) FROM '/docker-entrypoint-initdb.d/tags.csv' DELIMITER ',' CSV HEADER;

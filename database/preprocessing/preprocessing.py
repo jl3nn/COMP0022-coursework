@@ -7,13 +7,14 @@ processed_data_dir = 'processed_data/'
 movies_df = pd.read_csv(f"{raw_data_dir}movies.csv")
 links_df = pd.read_csv(f"{raw_data_dir}links.csv", dtype={'tmdbId': 'str'})
 
-merged_df = pd.merge(movies_df, links_df, on='movieId')
+merged_df = pd.merge(movies_df, links_df, on='movieId', how='left')
 
 # 2. Add movie image links 
 images_df = pd.read_csv(f"{raw_data_dir}image_assets.csv")
-merged_df = pd.merge(merged_df, images_df, left_on='movieId', right_on='item_id')
 
-merged_df.rename(columns={'url': 'imageUrl'}, inplace=True)
+merged_df = pd.merge(merged_df, images_df, left_on='movieId', right_on='item_id', how='left')
+merged_df.rename(columns={'image': 'imageUrl'}, inplace=True)
+merged_df.drop(columns=['item_id'], inplace=True)
 
 merged_df.to_csv(f'{processed_data_dir}movies.csv', index=False)
 
