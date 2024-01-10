@@ -15,7 +15,6 @@ merged_df = pd.merge(movies_df, links_df, on='movieId', how='left')
 images_df = pd.read_csv(f"image_assets.csv")
 
 merged_df = pd.merge(merged_df, images_df, left_on='movieId', right_on='item_id', how='left')
-merged_df.rename(columns={'image': 'imageUrl'}, inplace=True)
 merged_df.drop(columns=['item_id'], inplace=True)
 
 merged_df.to_csv(f'{processed_data_dir}movies.csv', index=False)
