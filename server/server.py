@@ -129,9 +129,15 @@ def calculate_personalities_skew():
     try:
         data = request.get_json()
         genre = data.get('genre')
-        personality = data.get('personality')
+        metric = data.get('metric')
+        metric_degree = data.get('metric_degree')
+        openness = data.get('openness')
+        agreeableness = data.get('agreeableness')
+        emotional_stability = data.get('emotional_stability')
+        conscientiousness = data.get('conscientiousness')
+        extraversion = data.get('extraversion')
 
-        if personality and genre:
+        if genre:
             skew_result = "higher"
             return jsonify(skew_result)
         else:
@@ -194,10 +200,9 @@ def users_autocomplete():
         return jsonify({'error': str(e)}), 500
     
 @cross_origin()
-@app.route('/personalities-autocomplete', methods=['GET'])
-def personalities_autocomplete():
-    # Replace this with actual data retrieval logic from your database
-    sample_personalities = ['Introvert', 'Extrovert', 'Ambivert']
+@app.route('/metric-degree-autocomplete', methods=['GET'])
+def metric_degree_autocomplete():
+    sample_personalities = ['low', 'med', 'high']
     try:
         prefix = request.args.get('prefix', '').lower()
         matches = [user for user in sample_personalities if user.lower().startswith(prefix)]
@@ -205,6 +210,19 @@ def personalities_autocomplete():
     except Exception as e:
         print(f"Error: {str(e)}")
         return jsonify({'error': str(e)}), 500
+
+@cross_origin()
+@app.route('/metric-autocomplete', methods=['GET'])
+def metric_autocomplete():
+    sample_personalities = ['serendipity', 'popularity', 'diversity']
+    try:
+        prefix = request.args.get('prefix', '').lower()
+        matches = [user for user in sample_personalities if user.lower().startswith(prefix)]
+        return jsonify(matches)
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5555, host='0.0.0.0')
