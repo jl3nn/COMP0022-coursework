@@ -1,17 +1,25 @@
-# Use an official PostgreSQL image as the base image
+# Stage 1: Build Python Image and Run preprocessing.py
+FROM python:3.11 AS builder
+
+WORKDIR /app
+
+COPY *.csv /app/
+COPY preprocessing.py /app/
+
+RUN pip install pandas
+
+RUN python preprocessing.py
+
+# Stage 2: Build PostgreSQL Image
 FROM postgres:latest
 
-# Set environment variables for PostgreSQL
 ENV POSTGRES_DB comp0022
 ENV POSTGRES_USER admin
 ENV POSTGRES_PASSWORD top_secret_password
 
-# Create a directory to store SQL scripts and CSV files
 WORKDIR /docker-entrypoint-initdb.d
 
-# Copy SQL scripts and CSV files to the container
-COPY init.sql .
-COPY preprocessing/processed_data/*.csv .
+COPY init.sql /docker-entrypoint-initdb.d/
+COPY --from=builder /app/processed/*.csv /docker-entrypoint-initdb.d/
 
-# Expose the PostgreSQL port
 EXPOSE 5432
