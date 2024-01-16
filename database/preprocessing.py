@@ -20,17 +20,20 @@ merged_df.drop(columns=['item_id'], inplace=True)
 merged_df.to_csv(f'{processed_data_dir}movies.csv', index=False)
 
 # 3. Convert the unix timestamp to a datetime object
+# Note, for the time being we are keeping personality ratings separate
 ratings_df = pd.read_csv(f"ratings.csv")
+rating_personalities_df = pd.read_csv(f"ratings_personalities.csv", delimiter=', ')
 tags_df = pd.read_csv(f"tags.csv")
 
 ratings_df['timestamp'] = pd.to_datetime(ratings_df['timestamp'], unit='s')
 tags_df['timestamp'] = pd.to_datetime(tags_df['timestamp'], unit='s')
 
 ratings_df.to_csv(f'{processed_data_dir}ratings.csv', index=False)
+rating_personalities_df.to_csv(f'{processed_data_dir}rating_personalities.csv', index=False)
 tags_df.to_csv(f'{processed_data_dir}tags.csv', index=False)
 
 # 4. Create a new table with the predicted rating for each movie
-original_data = pd.read_csv('personality-data.csv', delimiter=', ', engine='python')
+original_data = pd.read_csv('personalities.csv', delimiter=', ', engine='python')
 users_data = original_data[['userid', 'openness', 'agreeableness', 'emotional_stability',
                              'conscientiousness', 'extraversion', 'assigned_metric',
                              'assigned_condition', 'is_personalized', 'enjoy_watching']].copy()

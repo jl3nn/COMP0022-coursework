@@ -29,7 +29,6 @@ CREATE TABLE ratings (
     rating FLOAT NOT NULL,
     timestamp TIMESTAMP NOT NULL,
     PRIMARY KEY(user_id, movie_id),
-    FOREIGN KEY(user_id) REFERENCES users(user_id),
     FOREIGN KEY(movie_id) REFERENCES movies(movie_id)
 );
 
@@ -40,10 +39,20 @@ CREATE TABLE tags (
     tag VARCHAR(255) NOT NULL,
     timestamp TIMESTAMP NOT NULL,
     PRIMARY KEY(tag_id),
-    FOREIGN KEY(user_id) REFERENCES users(user_id),
     FOREIGN KEY(movie_id) REFERENCES movies(movie_id)
 );
 
+/*
+Note: for now we are keeping this separate from the main ratings table, but we may want to merge them later
+*/ 
+CREATE TABLE ratings_personality(
+    user_id VARCHAR(255),
+    movie_id INT,
+    rating FLOAT NOT NULL,
+    timestamp TIMESTAMP NOT NULL,
+    FOREIGN KEY(movie_id) REFERENCES movies(movie_id), 
+    FOREIGN KEY(user_id) REFERENCES users(user_id)
+);
 
 CREATE TABLE predicted_ratings (
     user_id VARCHAR(255),
@@ -58,5 +67,6 @@ CREATE TABLE predicted_ratings (
 COPY movies (movie_id, title, genres, imdb_id, tmdb_id, image_url) FROM '/docker-entrypoint-initdb.d/movies.csv' DELIMITER ',' CSV HEADER;
 COPY users (user_id, openness, agreeableness, emotional_stability, conscientiousness, extraversion, assigned_metric, assigned_condition, is_personalized, enjoy_watching) FROM '/docker-entrypoint-initdb.d/users.csv' DELIMITER ',' CSV HEADER;
 COPY ratings (user_id, movie_id, rating, timestamp) FROM '/docker-entrypoint-initdb.d/ratings.csv' DELIMITER ',' CSV HEADER;
+COPY ratings_personality (user_id, movie_id, rating, timestamp) FROM '/docker-entrypoint-initdb.d/ratings_personality.csv' DELIMITER ',' CSV HEADER;
 COPY tags (user_id, movie_id, tag, timestamp) FROM '/docker-entrypoint-initdb.d/tags.csv' DELIMITER ',' CSV HEADER;
 COPY predicted_ratings (user_id, movie_id, predicted_rating) FROM '/docker-entrypoint-initdb.d/predicted_ratings.csv' DELIMITER ',' CSV HEADER;
