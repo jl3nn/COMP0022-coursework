@@ -4,7 +4,6 @@ name: cowsay
 
 services:
   database:
-    container_name: database
     build: ./database
     ports:
       - "5432:5432"
@@ -15,7 +14,6 @@ services:
       - db_data:/var/lib/postgresql/data
 
   server:
-    container_name: server
     build: ./server
     ports:
       - "5555:5555"
@@ -26,7 +24,6 @@ services:
       - database
 
   client:
-    container_name: client
     build: ./client
     ports:
       - "80:80"
