@@ -6,7 +6,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - app
+      - backend
     volumes:
       - db_init:/docker-entrypoint-initdb.d
       - db_data:/var/lib/postgresql/data
@@ -16,7 +16,8 @@ services:
     ports:
       - "5555:5555"
     networks:
-      - app
+      - frontend
+      - backend
     depends_on:
       - database
 
@@ -25,7 +26,7 @@ services:
     ports:
       - "80:80"
     networks:
-      - app
+      - frontend
     depends_on:
       - server
 
@@ -34,4 +35,5 @@ volumes:
   db_data:
 
 networks:
-  app:
+  frontend:
+  backend:
