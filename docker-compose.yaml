@@ -1,39 +1,37 @@
 version: '3'
+
 services:
   database:
-    build:
-      context: ./database
+    build: ./database
     ports:
       - "5432:5432"
     networks:
-      - backend
+      - app
     volumes:
       - db_init:/docker-entrypoint-initdb.d
       - db_data:/var/lib/postgresql/data
 
   server:
-    build:
-      context: ./server
+    build: ./server
     ports:
       - "5555:5555"
     networks:
-      - backend
+      - app
     depends_on:
       - database
 
   client:
-    build:
-      context: ./client
+    build: ./client
     ports:
       - "80:80"
     networks:
-      - backend
+      - app
     depends_on:
       - server
-
-networks:
-  backend:
 
 volumes:
   db_init:
   db_data:
+
+networks:
+  app:
