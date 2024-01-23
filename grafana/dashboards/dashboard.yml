@@ -1,0 +1,19 @@
+apiVersion: 1
+
+providers:
+- name: 'default'
+  orgId: 1
+  folder: ''
+  type: file
+  disableDeletion: false
+  editable: true
+  options:
+    path: /etc/grafana/provisioning/dashboards
+
+dashboards:
+- name: 'Custom Metrics Dashboard'
+  uid: 'custom-metrics-dashboard'
+  folder: ''
+  overwrite: true
+  editMode: true
+  path: /etc/grafana/provisioning/dashboards/custom-metrics-dashboard.json  # Specify the path to the JSON file

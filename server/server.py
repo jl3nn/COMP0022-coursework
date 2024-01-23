@@ -2,11 +2,14 @@ from flask import Flask, jsonify
 from flask_cors import CORS, cross_origin 
 import psycopg2
 from flask import request
+from prometheus_flask_exporter import PrometheusMetrics
+
 
 app = Flask(__name__)
 app = Flask(__name__)
 cors = CORS(app)
 app = Flask(__name__)
+metrics = PrometheusMetrics(app)
 cors = CORS(app, origins="*")
 app.config['CORS_HEADERS'] = 'Content-Type'
 

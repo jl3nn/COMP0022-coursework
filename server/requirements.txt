@@ -3,3 +3,4 @@ sqlalchemy
 psycopg2
 flask-cors
 gunicorn
+prometheus-flask-exporter
