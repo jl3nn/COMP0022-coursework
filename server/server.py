@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask_cors import CORS, cross_origin
 import psycopg
 from typing import Optional
@@ -19,10 +19,10 @@ def execute_query(query: str, query_params: Optional[dict] = None) -> list:
     with psycopg.connect(**db_params) as conn:
         with conn.cursor() as cursor:
             cursor.execute(query, query_params)
-            result = cursor.fetchall()
+            results = cursor.fetchall()
 
     conn.close()
-    return result
+    return results
 
 
 @cross_origin()
@@ -186,29 +186,33 @@ def genre_autocomplete():
 
 @cross_origin()
 @app.route("/tags-autocomplete", methods=["GET"])
-def tags_autocomplete():
-    # limit to five and replace with a sql query
-    sample_tags = ["Adventure", "Romance", "Thriller", "Fantasy", "Mystery"]
+def tags_autocomplete() -> Response:
     try:
-        prefix = request.args.get("prefix", "").lower()
-        matches = [tag for tag in sample_tags if tag.lower().startswith(prefix)]
-        return jsonify(matches)
+        results = execute_query(
+            "SELECT tag FROM tags WHERE LOWER(tag) LIKE %(prefix)s LIMIT 5",
+            {"prefix": request.args.get("prefix", "").lower() + "%"},
+        )
+
+        tags = list(map(lambda row: row[0], results))
+        return jsonify(tags)
     except Exception as e:
-        print(f"Error: {str(e)}")
+        print(f"[tags_autocomplete] error: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 
 @cross_origin()
 @app.route("/films-autocomplete", methods=["GET"])
-def films_autocomplete():
-    # Replace this with actual data retrieval logic from your database
-    sample_films = ["Film1", "Film2", "Film3", "Film4", "Film5"]
+def films_autocomplete() -> Response:
     try:
-        prefix = request.args.get("prefix", "").lower()
-        matches = [film for film in sample_films if film.lower().startswith(prefix)]
-        return jsonify(matches)
+        results = execute_query(
+            "SELECT title FROM movies WHERE LOWER(title) LIKE %(prefix)s LIMIT 5",
+            {"prefix": request.args.get("prefix", "").lower() + "%"},
+        )
+
+        films = list(map(lambda row: row[0], results))
+        return jsonify(films)
     except Exception as e:
-        print(f"Error: {str(e)}")
+        print(f"[films_autocomplete] error: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 
