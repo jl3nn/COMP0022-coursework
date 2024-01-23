@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
-import psycopg2
+import psycopg
 from typing import Optional
 
 app = Flask(__name__)
@@ -16,7 +16,7 @@ db_params = {
 
 
 def execute_query(query: str, query_params: Optional[dict] = None) -> list:
-    with psycopg2.connect(**db_params) as conn:
+    with psycopg.connect(**db_params) as conn:
         with conn.cursor() as cursor:
             cursor.execute(query, query_params)
             result = cursor.fetchall()
