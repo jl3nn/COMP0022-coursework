@@ -15,7 +15,7 @@ db_params = {
 }
 
 
-def execute_query(query: str, query_params: Optional[dict] = None) -> list[tuple]:
+def execute_query(query: str, query_params: Optional[dict] = None) -> list:
     with psycopg2.connect(**db_params) as conn:
         with conn.cursor() as cursor:
             cursor.execute(query, query_params)
