@@ -4,7 +4,7 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 app.register_blueprint(blueprints.autocomplete.app, url_prefix="/autocomplete")
-CORS(app)
+CORS(app, origins="http://localhost")
 
 
 @app.route("/get-search-results", methods=["POST"])
