@@ -21,7 +21,7 @@ def autocomplete_genre():
 def autocomplete_tag() -> Response:
     try:
         results = execute_query(
-            "SELECT tag FROM tags WHERE LOWER(tag) LIKE %(prefix)s LIMIT 5",
+            "SELECT DISTINCT tag FROM tags WHERE LOWER(tag) LIKE %(prefix)s LIMIT 5",
             {"prefix": request.args.get("prefix", "").lower() + "%"},
         )
 
@@ -36,7 +36,7 @@ def autocomplete_tag() -> Response:
 def autocomplete_movie() -> Response:
     try:
         results = execute_query(
-            "SELECT title FROM movies WHERE LOWER(title) LIKE %(prefix)s LIMIT 5",
+            "SELECT DISTINCT title FROM movies WHERE LOWER(title) LIKE %(prefix)s LIMIT 5",
             {"prefix": request.args.get("prefix", "").lower() + "%"},
         )
 
