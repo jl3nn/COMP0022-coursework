@@ -54,20 +54,20 @@ const SearchComponent = () => {
             {...params}
             sx={{ flex: 1 }}
             InputProps={{
-                ...params.InputProps,
-                startAdornment: (
-                  <InputAdornment position="start">
-                      <SearchIcon />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton size="small" onClick={() => handleFilterIconClick()}>
-                      <FilterIcon />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
+              ...params.InputProps,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton size="small" onClick={() => handleFilterIconClick()}>
+                    <FilterIcon />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
         )}
       />
@@ -76,37 +76,37 @@ const SearchComponent = () => {
   );
 };
 
-const SearchDrawer = ({isFilterDrawerOpen, handleFilterDrawerClose}: any) => {
-    const {ratings, tags, genres, setRatingFilter, setTagsFilter, setGenresFilter, resetFilters} = useSearch();
-    const [tagOptions, setTagOptions] = useState([] as string[]);
-    const [genreOptions, setGenreOptions] = useState([] as string[]);
-    const [tagText, setTagText] = useState('');
-    const [genreText, setGenreText] = useState('');
+const SearchDrawer = ({ isFilterDrawerOpen, handleFilterDrawerClose }: any) => {
+  const { ratings, tags, genres, setRatingFilter, setTagsFilter, setGenresFilter, resetFilters } = useSearch();
+  const [tagOptions, setTagOptions] = useState([] as string[]);
+  const [genreOptions, setGenreOptions] = useState([] as string[]);
+  const [tagText, setTagText] = useState('');
+  const [genreText, setGenreText] = useState('');
 
-    return (
-        <Drawer anchor="right" open={isFilterDrawerOpen} onClose={handleFilterDrawerClose}>
-            <Box margin={3}>
-            <Typography variant="h4" sx={{'marginX': 'auto'}}>Search Filters</Typography>
-            <Stack spacing={4} sx={{ p: 2, width: 250 }}>
-                <Box>
-                    <Typography>Rating:</Typography>
-                    <Slider
-                        value={ratings}
-                        onChange={(_, val) => setRatingFilter(val as [number, number])}
-                        valueLabelDisplay="auto"
-                        min={0}
-                        max={5}
-                        step={0.5}
-                        marks={[{ value: 0, label: '0' }, { value: 10, label: '10' }]}
-                    />
-                </Box>
-                <AutocompleteWithFetch value={genres} label="Genres" multiple apiUrl="http://localhost:5555/genre-autocomplete" onChange={(_: any, newValue: any) => setGenresFilter(newValue)} />
-                <AutocompleteWithFetch value={tags} label="Tags" multiple apiUrl="http://localhost:5555/tags-autocomplete" onChange={(_: any, newValue: any) => setTagOptions(newValue)} />
-            </Stack>
-            <Button onClick={resetFilters}>Reset Filters</Button>
-            </Box>
-        </Drawer>
-    );
+  return (
+    <Drawer anchor="right" open={isFilterDrawerOpen} onClose={handleFilterDrawerClose}>
+      <Box margin={3}>
+        <Typography variant="h4" sx={{ 'marginX': 'auto' }}>Search Filters</Typography>
+        <Stack spacing={4} sx={{ p: 2, width: 250 }}>
+          <Box>
+            <Typography>Rating:</Typography>
+            <Slider
+              value={ratings}
+              onChange={(_, val) => setRatingFilter(val as [number, number])}
+              valueLabelDisplay="auto"
+              min={0}
+              max={5}
+              step={0.5}
+              marks={[{ value: 0, label: '0' }, { value: 10, label: '10' }]}
+            />
+          </Box>
+          <AutocompleteWithFetch value={genres} label="Genres" multiple apiUrl="http://localhost:5555/autocomplete/genre" onChange={(_: any, newValue: any) => setGenresFilter(newValue)} />
+          <AutocompleteWithFetch value={tags} label="Tags" multiple apiUrl="http://localhost:5555/autocomplete/tag" onChange={(_: any, newValue: any) => setTagOptions(newValue)} />
+        </Stack>
+        <Button onClick={resetFilters}>Reset Filters</Button>
+      </Box>
+    </Drawer>
+  );
 }
 
 export default SearchComponent;
