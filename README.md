@@ -1,12 +1,11 @@
+# COMP0022 Coursework
 
-Classic 3-tier stack
-- React Frontend (Typescript) on 80
-- Flask Backend (Python) on 5555
-- PostgreSQL backend on 5432
+Classic three-tier stack:
+- React frontend (TypeScript) on port 80
+- Flask backend (Python) on port 5555
+- PostgreSQL backend on port 5432
 
-start with
-```
+Start with:
+```shell
 docker compose up
 ```
-
-todo, check python libs

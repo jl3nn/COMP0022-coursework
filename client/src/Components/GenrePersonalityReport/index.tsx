@@ -16,25 +16,25 @@ function GenrePersonalityPage() {
     useEffect(() => {
         const calculateSkew = async () => {
             try {
-            const response = await fetch('http://localhost:5555/personality-skew', {
-                method: 'POST',
-                headers: {
-                'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ genre, metric, metric_degree, openness, agreeableness, emotional_stability, conscientiousness, extraversion }),
-            });
-        
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-        
-            const skewData = await response.json();
-            setSkew(skewData);
-            } catch (error : any) {
-            console.error('Error calculating skew:', error.message);
+                const response = await fetch('http://localhost:5555/personality-skew', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ genre, metric, metric_degree, openness, agreeableness, emotional_stability, conscientiousness, extraversion }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const skewData = await response.json();
+                setSkew(skewData);
+            } catch (error: any) {
+                console.error('Error calculating skew:', error.message);
             }
         };
-        
+
         if (genre) {
             calculateSkew();
         } else {
@@ -45,25 +45,25 @@ function GenrePersonalityPage() {
 
     return (
         <Stack spacing={2} alignItems="center" maxWidth={800} margin='auto'>
-            <AutocompleteWithFetch value={genre} label="Genres" apiUrl="http://localhost:5555/genre-autocomplete" 
+            <AutocompleteWithFetch value={genre} label="Genres" apiUrl="http://localhost:5555/autocomplete/genre"
                 onChange={(_: any, newValue: any) => setGenres(newValue)} />
-            <AutocompleteWithFetch value={metric} label="Personality Metric" apiUrl="http://localhost:5555/metric-autocomplete" 
+            <AutocompleteWithFetch value={metric} label="Personality Metric" apiUrl="http://localhost:5555/autocomplete/metric"
                 onChange={(_: any, newValue: any) => setMetric(newValue)} />
-            <AutocompleteWithFetch value={metric_degree} label="Personality Metric Degree" apiUrl="http://localhost:5555/metric-degree-autocomplete" 
+            <AutocompleteWithFetch value={metric_degree} label="Personality Metric Degree" apiUrl="http://localhost:5555/autocomplete/metric-degree"
                 onChange={(_: any, newValue: any) => setMetricDegree(newValue)} />
 
             <SliderForPersonality title="Openness" value={openness} onChange={setOpenness} />
-            <SliderForPersonality title="Agreeableness" value={agreeableness} onChange={setAgreeableness} /> 
+            <SliderForPersonality title="Agreeableness" value={agreeableness} onChange={setAgreeableness} />
             <SliderForPersonality title="Emotional Stability" value={emotional_stability} onChange={setEmotionalStability} />
             <SliderForPersonality title="Conscientiousness" value={conscientiousness} onChange={setConscientiousness} />
             <SliderForPersonality title="Extraversion" value={extraversion} onChange={setExtraversion} />
 
             <Typography>
-            {personality_skew ? (
-                <>This group rates {genre} {personality_skew} compared to other groups.</>
-            ) : (
-                <>Please select a genre, to see how this group compares!</>
-            )}
+                {personality_skew ? (
+                    <>This group rates {genre} {personality_skew} compared to other groups.</>
+                ) : (
+                    <>Please select a genre, to see how this group compares!</>
+                )}
             </Typography>
         </Stack>
     );
@@ -75,7 +75,7 @@ type SliderForPersonalityProps = {
     onChange: (value: [number, number]) => void;
 }
 
-function SliderForPersonality({title, value, onChange} : SliderForPersonalityProps) {
+function SliderForPersonality({ title, value, onChange }: SliderForPersonalityProps) {
     return (
         <Box>
             <Typography>{title}:</Typography>
@@ -86,7 +86,7 @@ function SliderForPersonality({title, value, onChange} : SliderForPersonalityPro
                 min={1}
                 max={7}
                 step={0.5}
-                sx={{width: 300}}
+                sx={{ width: 300 }}
                 marks={[{ value: 0, label: '1' }, { value: 10, label: '7' }]}
             />
         </Box>

@@ -1,8 +1,10 @@
 version: '3'
+
+name: cowsay
+
 services:
   database:
-    build:
-      context: ./database
+    build: ./database
     ports:
       - "5432:5432"
     networks:
@@ -12,22 +14,21 @@ services:
       - db_data:/var/lib/postgresql/data
 
   server:
-    build:
-      context: ./server
+    build: ./server
     ports:
       - "5555:5555"
     networks:
+      - frontend
       - backend
     depends_on:
       - database
 
   client:
-    build:
-      context: ./client
+    build: ./client
     ports:
       - "80:80"
     networks:
-      - backend
+      - frontend
     depends_on:
       - server
     labels:
@@ -74,9 +75,10 @@ services:
     networks:
       - backend
 
-networks:
-  backend:
-
 volumes:
   db_init:
   db_data:
+
+networks:
+  frontend:
+  backend:
