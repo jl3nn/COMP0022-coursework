@@ -64,7 +64,7 @@ services:
       - "9113:9113"
     command: ["--nginx.scrape-uri=http://client/metrics"]
     networks:
-      - backend
+      - frontend
 
   postgres-exporter:
     image: quay.io/prometheuscommunity/postgres-exporter

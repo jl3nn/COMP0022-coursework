@@ -1,7 +1,7 @@
 import blueprints
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin 
-import psycopg2
+import psycopg
 from flask import request
 from prometheus_flask_exporter import PrometheusMetrics
 
