@@ -7,8 +7,6 @@ from prometheus_flask_exporter import PrometheusMetrics
 
 app = Flask(__name__)
 metrics = PrometheusMetrics(app)
-cors = CORS(app, origins="*")
-app.config['CORS_HEADERS'] = 'Content-Type'
 app.register_blueprint(blueprints.autocomplete.app, url_prefix="/autocomplete")
 CORS(app, origins="http://localhost")
 
