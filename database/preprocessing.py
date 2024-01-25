@@ -20,7 +20,6 @@ movies_df.drop(columns=['item_id'], inplace=True)
 movies_df.to_csv(f'{processed_data_dir}movies.csv', index=False)
 
 # 3. Convert the unix timestamp to a datetime object
-# Note, for the time being we are keeping personality ratings separate
 ratings_df = pd.read_csv(f"ratings.csv")
 tags_df = pd.read_csv(f"tags.csv")
 
