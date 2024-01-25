@@ -9,38 +9,23 @@ if not os.path.exists(processed_data_dir):
 movies_df = pd.read_csv(f"movies.csv")
 links_df = pd.read_csv(f"links.csv", dtype={'tmdbId': 'str'})
 
-merged_df = pd.merge(movies_df, links_df, on='movieId', how='left')
+movies_df = pd.merge(movies_df, links_df, on='movieId', how='left')
 
 # 2. Add movie image links 
 images_df = pd.read_csv(f"image_assets.csv")
 
-merged_df = pd.merge(merged_df, images_df, left_on='movieId', right_on='item_id', how='left')
-merged_df.drop(columns=['item_id'], inplace=True)
+movies_df = pd.merge(movies_df, images_df, left_on='movieId', right_on='item_id', how='left')
+movies_df.drop(columns=['item_id'], inplace=True)
 
-merged_df.to_csv(f'{processed_data_dir}movies.csv', index=False)
+movies_df.to_csv(f'{processed_data_dir}movies.csv', index=False)
 
 # 3. Convert the unix timestamp to a datetime object
 # Note, for the time being we are keeping personality ratings separate
 ratings_df = pd.read_csv(f"ratings.csv")
-rating_personalities_df = pd.read_csv(f"ratings_personalities.csv", delimiter=', ')
 tags_df = pd.read_csv(f"tags.csv")
 
 ratings_df['timestamp'] = pd.to_datetime(ratings_df['timestamp'], unit='s')
 tags_df['timestamp'] = pd.to_datetime(tags_df['timestamp'], unit='s')
 
 ratings_df.to_csv(f'{processed_data_dir}ratings.csv', index=False)
-rating_personalities_df.to_csv(f'{processed_data_dir}rating_personalities.csv', index=False)
 tags_df.to_csv(f'{processed_data_dir}tags.csv', index=False)
-
-# 4. Create a new table with the predicted rating for each movie
-original_data = pd.read_csv('personalities.csv', delimiter=', ', engine='python')
-users_data = original_data[['userid', 'openness', 'agreeableness', 'emotional_stability',
-                             'conscientiousness', 'extraversion', 'assigned_metric',
-                             'assigned_condition', 'is_personalized', 'enjoy_watching']].copy()
-users_data.to_csv(f'{processed_data_dir}users.csv', index=False)
-
-dfs = []
-for i in range(1, 13):
-    dfs.append(original_data[['userid', f'movie_{i}', f'predicted_rating_{i}']].rename(columns={f'movie_{i}': 'movie', f'predicted_rating_{i}': 'predicted_rating'}))
-predicted_ratings_df = pd.concat(dfs, ignore_index=True)
-predicted_ratings_df.to_csv(f'{processed_data_dir}predicted_ratings.csv', index=False)
