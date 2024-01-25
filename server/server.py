@@ -1,8 +1,12 @@
 import blueprints
 from flask import Flask, jsonify, request
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin 
+import psycopg
+from flask import request
+from prometheus_flask_exporter import PrometheusMetrics
 
 app = Flask(__name__)
+metrics = PrometheusMetrics(app)
 app.register_blueprint(blueprints.autocomplete.app, url_prefix="/autocomplete")
 CORS(app, origins="http://localhost")
 
