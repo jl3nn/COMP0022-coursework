@@ -77,7 +77,7 @@ const SearchComponent = () => {
 };
 
 const SearchDrawer = ({ isFilterDrawerOpen, handleFilterDrawerClose }: any) => {
-  const { ratings, tags, genres, setRatingFilter, setTagsFilter, setGenresFilter, resetFilters } = useSearch();
+  const { ratings, tags, genres, date, setRatingFilter, setDateFilter, setTagsFilter, setGenresFilter, resetFilters } = useSearch();
   const [tagOptions, setTagOptions] = useState([] as string[]);
   const [genreOptions, setGenreOptions] = useState([] as string[]);
   const [tagText, setTagText] = useState('');
@@ -102,6 +102,15 @@ const SearchDrawer = ({ isFilterDrawerOpen, handleFilterDrawerClose }: any) => {
           </Box>
           <AutocompleteWithFetch value={genres} label="Genres" multiple apiUrl="http://localhost:5555/autocomplete/genre" onChange={(_: any, newValue: any) => setGenresFilter(newValue)} />
           <AutocompleteWithFetch value={tags} label="Tags" multiple apiUrl="http://localhost:5555/autocomplete/tag" onChange={(_: any, newValue: any) => setTagOptions(newValue)} />
+          <Slider
+              value={date}
+              onChange={(_, val) => setDateFilter(val as [number, number])}
+              valueLabelDisplay="auto"
+              min={1902}
+              max={2018}
+              step={1}
+              marks={[{ value: 1902, label: '1902' }, { value: 2018, label: '2018' }]}
+            />
         </Stack>
         <Button onClick={resetFilters}>Reset Filters</Button>
       </Box>

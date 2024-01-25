@@ -6,10 +6,12 @@ interface SearchContextProps {
   ratings: [number, number];
   tags: string[];
   genres: string[];
+  date: [number, number];
   setSearchFilter: (text: string) => void;
   setRatingFilter: (value: [number, number]) => void;
   setTagsFilter: (selectedTags: string[]) => void;
   setGenresFilter: (selectedGenres: string[]) => void;
+  setDateFilter: (date: [number, number]) => void;
   resetFilters: () => void;
 }
 
@@ -24,6 +26,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   const [ratings, setRating] = useState<[number, number]>([0, 10]);
   const [tags, setTags] = useState<string[]>([]);
   const [genres, setGenres] = useState<string[]>([]);
+  const [date, setDate] = useState<[number, number]>([1902, 2018]);
 
   const setSearchFilter = (text: string) => {
     setSearchText(text);
@@ -41,6 +44,10 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     setGenres(selectedGenres);
   };
 
+  const setDateFilter = (date: [number,  number]) => {
+    setDate(date);
+  }
+
   const resetFilters = () => {
     setSearchText('');
     setRating([0, 10]);
@@ -53,6 +60,8 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     ratings,
     tags,
     genres,
+    date,
+    setDateFilter,
     setSearchFilter,
     setRatingFilter,
     setTagsFilter,
