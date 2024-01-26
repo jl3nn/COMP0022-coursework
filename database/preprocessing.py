@@ -1,46 +1,58 @@
 import pandas as pd
 import os
 
-processed_data_dir = 'processed/'
-if not os.path.exists(processed_data_dir):
-    os.makedirs(processed_data_dir)
+# Ensure the processed data directory exists
+processed_data_dir = "processed/"
+os.makedirs(processed_data_dir, exist_ok=True)
 
-# 1. Normalise the data by merging movies with their links on the 'movieId' column
-movies_df = pd.read_csv(f"movies.csv")
-links_df = pd.read_csv(f"links.csv", dtype={'tmdbId': 'str'})
+# Load data
+movies_df = pd.read_csv("movies.csv")
+links_df = pd.read_csv("links.csv", dtype={"tmdbId": "str"})
+images_df = pd.read_csv("image_assets.csv")
+ratings_df = pd.read_csv("ratings.csv")
+tags_df = pd.read_csv("tags.csv")
 
-merged_df = pd.merge(movies_df, links_df, on='movieId', how='left')
+# Normalize movies with links data
+movies_df = (
+    movies_df.merge(links_df, on="movieId", how="left")
+    .merge(images_df, left_on="movieId", right_on="item_id", how="left")
+    .drop(columns=["item_id"])
+)
 
-# 2. Add movie image links 
-images_df = pd.read_csv(f"image_assets.csv")
+# Extract year, clean title
+movies_df["year"] = movies_df["title"].str.extract(r"(\d{4})")[0].astype('Int64')
+movies_df["title"] = movies_df["title"].str.replace(r" \(\d{4}\)", "", regex=True)
 
-merged_df = pd.merge(merged_df, images_df, left_on='movieId', right_on='item_id', how='left')
-merged_df.drop(columns=['item_id'], inplace=True)
+# Create genre table and movie-genre association
+exploded_genres = movies_df["genres"].str.split("|").explode()
+exploded_genres = exploded_genres[exploded_genres != "(no genres listed)"]
 
-merged_df.to_csv(f'{processed_data_dir}movies.csv', index=False)
+genres_df = pd.DataFrame(exploded_genres.unique(), columns=["genre"])
+genres_df["genreId"] = genres_df.index + 1
 
-# 3. Convert the unix timestamp to a datetime object
-# Note, for the time being we are keeping personality ratings separate
-ratings_df = pd.read_csv(f"ratings.csv")
-rating_personalities_df = pd.read_csv(f"ratings_personalities.csv", delimiter=', ')
-tags_df = pd.read_csv(f"tags.csv")
+temp_df = movies_df.assign(genres=movies_df["genres"].str.split("|")).explode("genres")
+temp_df = temp_df[temp_df["genres"] != "(no genres listed)"]
 
-ratings_df['timestamp'] = pd.to_datetime(ratings_df['timestamp'], unit='s')
-tags_df['timestamp'] = pd.to_datetime(tags_df['timestamp'], unit='s')
+movie_genres_df = temp_df.merge(
+    genres_df, left_on="genres", right_on="genre", how="left"
+)[["movieId", "genreId"]]
 
-ratings_df.to_csv(f'{processed_data_dir}ratings.csv', index=False)
-rating_personalities_df.to_csv(f'{processed_data_dir}rating_personalities.csv', index=False)
-tags_df.to_csv(f'{processed_data_dir}tags.csv', index=False)
+# Drop genres column from movies_df as it's now redundant
+movies_df.drop(columns=["genres"], inplace=True)
 
-# 4. Create a new table with the predicted rating for each movie
-original_data = pd.read_csv('personalities.csv', delimiter=', ', engine='python')
-users_data = original_data[['userid', 'openness', 'agreeableness', 'emotional_stability',
-                             'conscientiousness', 'extraversion', 'assigned_metric',
-                             'assigned_condition', 'is_personalized', 'enjoy_watching']].copy()
-users_data.to_csv(f'{processed_data_dir}users.csv', index=False)
+# Convert timestamps in ratings and tags
+ratings_df["timestamp"] = pd.to_datetime(ratings_df["timestamp"], unit="s")
+tags_df["timestamp"] = pd.to_datetime(tags_df["timestamp"], unit="s")
 
-dfs = []
-for i in range(1, 13):
-    dfs.append(original_data[['userid', f'movie_{i}', f'predicted_rating_{i}']].rename(columns={f'movie_{i}': 'movie', f'predicted_rating_{i}': 'predicted_rating'}))
-predicted_ratings_df = pd.concat(dfs, ignore_index=True)
-predicted_ratings_df.to_csv(f'{processed_data_dir}predicted_ratings.csv', index=False)
+# Extract unique user IDs
+users_df = (
+    pd.concat([ratings_df["userId"], tags_df["userId"]]).drop_duplicates().to_frame()
+)
+
+# Save processed data
+movies_df.to_csv(f"{processed_data_dir}movies.csv", index=False)
+ratings_df.to_csv(f"{processed_data_dir}ratings.csv", index=False)
+tags_df.to_csv(f"{processed_data_dir}tags.csv", index=False)
+users_df.to_csv(f"{processed_data_dir}users.csv", index=False)
+genres_df.to_csv(f"{processed_data_dir}genres.csv", index=False)
+movie_genres_df.to_csv(f"{processed_data_dir}movies_genres.csv", index=False)
