@@ -15,7 +15,7 @@ type Movie = {
 }
 
 function MovieListPage() {
-    const {searchText, ratings, tags, genres} = useSearch();
+    const {searchText, ratings, tags, genres, date} = useSearch();
     const [data, setData] = useState<Movie[]>([]);
 
     useEffect(() => {
@@ -31,6 +31,7 @@ function MovieListPage() {
                     ratings,
                     tags,
                     genres,
+                    date
                 }),
                 mode: 'cors'
                 });

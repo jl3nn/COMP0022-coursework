@@ -19,6 +19,7 @@ def get_search_results():
         ratings = data.get("ratings", [0, 10])
         tags = data.get("tags", [])
         genres = data.get("genres", [])
+        date = data.get("date", [])
         # Mock data for testing purposes
         result_data = [
             {
