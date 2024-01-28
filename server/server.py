@@ -66,11 +66,12 @@ def calculate_users_skew():
         data = request.get_json()
         genres = data.get("genres")
         films = data.get("films")
-        users = data.get("users")
+        opinion = data.get("opinion")
 
-        if users and (films or genres):
-            skew_result = "higher"  # Replace with your actual skew calculation
-            return jsonify(skew_result)
+        if opinion and (films or genres):
+            better = ['Genre 1', 'Genre 2', 'Genre 3']
+            worse = ['Genre 4', 'Genre 5', 'Genre 6']
+            return jsonify({"better": better, "worse": worse})
         else:
             return (
                 jsonify(
