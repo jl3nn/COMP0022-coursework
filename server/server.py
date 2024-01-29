@@ -103,16 +103,15 @@ def calculate_users_skew():
 def movie_prediction():
     try:
         data = request.get_json()
-        tags = data.get("tags", [])
+        movie = data.get("movie", '')
         users = data.get("users", [])
-        ratings = data.get("ratings", [0, 10])
-        if tags or users or ratings:
+        if users and movie:
             rating = 4.37
             return jsonify(rating)
         else:
             return (
                 jsonify(
-                    {"error": "Please provide at least one user and one film or genre."}
+                    {"error": "Please provide at least one user and a movie."}
                 ),
                 400,
             )

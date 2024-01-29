@@ -49,10 +49,10 @@ def autocomplete_movie() -> Response:
 
 @app.route("/user", methods=["GET"])
 def autocomplete_user():
-    # Replace this with actual data retrieval logic from your database
-    sample_users = ["User1", "User2", "User3", "User4", "User5"]
+    prefix = request.args.get("prefix", "").lower()
+    movie = request.args.get("movie", "")
+    sample_users = ["User1" + movie, "User2" + movie, "User3" + movie, "User4" + movie, "User5" + movie]
     try:
-        prefix = request.args.get("prefix", "").lower()
         matches = [user for user in sample_users if user.lower().startswith(prefix)]
         return jsonify(matches)
     except Exception as e:

@@ -9,17 +9,22 @@ type CompleteWithFetchProps = {
     label: string;
     multiple?: boolean;
     disabled?: boolean;
+    suffix?: string;
 };
 
-const AutocompleteWithFetch = ({ apiUrl, disabled, onChange, label, value, multiple } : CompleteWithFetchProps) => {
+const AutocompleteWithFetch = ({ apiUrl, disabled, onChange, label, value, multiple, suffix } : CompleteWithFetchProps) => {
   const [fetchOptions, setFetchOptions] = useState([] as string[]);
   const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
-    fetch(`${apiUrl}?prefix=${inputValue}`, { mode: 'cors' })
+    let url = `${apiUrl}?prefix=${inputValue}`
+    if (suffix) {
+      url += `&${suffix}`;
+    }
+    fetch(url, { mode: 'cors' })
       .then((response) => response.json())
-      .then((data) => setFetchOptions(data));
-  }, [apiUrl, inputValue]);
+      .then((data) => {setFetchOptions(data); console.log(data);});
+  }, [apiUrl, inputValue, suffix]);
 
   return (
     <Autocomplete
