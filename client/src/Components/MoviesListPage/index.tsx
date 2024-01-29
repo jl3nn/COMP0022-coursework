@@ -65,7 +65,7 @@ function MovieListPage() {
         };
 
         fetchData();
-    }, [searchText, ratings, tags, genres]);
+    }, [searchText, ratings, tags, genres, date]);
 
     return (
         <Stack spacing={2} alignItems="center" margin={5}>
