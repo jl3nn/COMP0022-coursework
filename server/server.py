@@ -3,9 +3,17 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from prometheus_flask_exporter import PrometheusMetrics
 
+# Initialize Flask app
 app = Flask(__name__)
+
+# Register blueprints
 app.register_blueprint(blueprints.autocomplete.app, url_prefix="/autocomplete")
+app.register_blueprint(blueprints.movies.app, url_prefix="/movies")
+
+# Initialize cross origin resource sharing
 CORS(app, origins="http://localhost")
+
+# Create a new Prometheus metrics export configuration
 PrometheusMetrics(app)
 
 
@@ -29,24 +37,6 @@ def get_search_results():
             }
             for _ in range(10)
         ]
-        return jsonify(result_data)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/movies/popular", methods=["GET"])
-def get_popular_movies():
-    try:
-        result_data = ["Some Genre" for _ in range(10)]
-        return jsonify(result_data)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route("/movies/controversial", methods=["GET"])
-def get_controversial_movies():
-    try:
-        result_data = ["Some Other Genre" for _ in range(10)]
         return jsonify(result_data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -124,7 +114,3 @@ def calculate_personalities_skew():
     except Exception as e:
         print(f"Error: {str(e)}")
         return jsonify({"error": str(e)}), 500
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5555, debug=True)
