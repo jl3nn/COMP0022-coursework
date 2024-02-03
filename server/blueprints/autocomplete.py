@@ -4,60 +4,37 @@ from flask import Blueprint, jsonify, request, Response
 app = Blueprint("autocomplete", __name__)
 
 
-@app.route("/genre", methods=["GET"])
-def autocomplete_genre():
-    sample_genres = ["Action", "Comedy", "Drama", "Horror", "Science Fiction"]
+def autocomplete(field: str, table: str, limit: int = 5) -> Response:
     try:
-        # limit to five and replace with a sql query
-        prefix = request.args.get("prefix", "").lower()
-        matches = [genre for genre in sample_genres if genre.lower().startswith(prefix)]
-        return jsonify(matches)
+        results = execute_query(
+            f"SELECT DISTINCT {field} FROM {table} WHERE LOWER({field}) LIKE %(prefix)s LIMIT {limit}",
+            {"prefix": request.args.get("prefix", "").lower() + "%"},
+        )
+
+        return jsonify(list(map(lambda row: row[0], results)))
     except Exception as e:
-        print(f"Error: {str(e)}")
+        print(f"[autocomplete] error: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/genre", methods=["GET"])
+def autocomplete_genre() -> Response:
+    return autocomplete("genre", "genres")
 
 
 @app.route("/tag", methods=["GET"])
 def autocomplete_tag() -> Response:
-    try:
-        results = execute_query(
-            "SELECT DISTINCT tag FROM tags WHERE LOWER(tag) LIKE %(prefix)s LIMIT 5",
-            {"prefix": request.args.get("prefix", "").lower() + "%"},
-        )
-
-        tags = list(map(lambda row: row[0], results))
-        return jsonify(tags)
-    except Exception as e:
-        print(f"[autocomplete_tag] error: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+    return autocomplete("tag", "tags")
 
 
 @app.route("/movie", methods=["GET"])
 def autocomplete_movie() -> Response:
-    try:
-        results = execute_query(
-            "SELECT DISTINCT title FROM movies WHERE LOWER(title) LIKE %(prefix)s LIMIT 5",
-            {"prefix": request.args.get("prefix", "").lower() + "%"},
-        )
-
-        films = list(map(lambda row: row[0], results))
-        return jsonify(films)
-    except Exception as e:
-        print(f"[autocomplete_movie] error: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+    return autocomplete("title", "movies")
 
 
 @app.route("/user", methods=["GET"])
-def autocomplete_user():
-    prefix = request.args.get("prefix", "").lower()
-    movie = request.args.get("movie", "")
-    sample_users = ["User1" + movie, "User2" + movie, "User3" + movie, "User4" + movie, "User5" + movie]
-    try:
-        matches = [user for user in sample_users if user.lower().startswith(prefix)]
-        return jsonify(matches)
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+def autocomplete_user() -> Response:
+    return autocomplete("user_id", "users")
 
 
 @app.route("/metric-degree", methods=["GET"])

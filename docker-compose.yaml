@@ -62,7 +62,7 @@ services:
     image: nginx/nginx-prometheus-exporter:1.1.0
     ports:
       - "9113:9113"
-    command: ["--nginx.scrape-uri=http://client/metrics"]
+    command: [ "--nginx.scrape-uri=http://client/metrics" ]
     networks:
       - frontend
 

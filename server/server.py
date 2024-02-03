@@ -1,14 +1,12 @@
 import blueprints
 from flask import Flask, jsonify, request
-from flask_cors import CORS, cross_origin 
-import psycopg
-from flask import request
+from flask_cors import CORS
 from prometheus_flask_exporter import PrometheusMetrics
 
 app = Flask(__name__)
-metrics = PrometheusMetrics(app)
 app.register_blueprint(blueprints.autocomplete.app, url_prefix="/autocomplete")
 CORS(app, origins="http://localhost")
+PrometheusMetrics(app)
 
 
 @app.route("/get-search-results", methods=["POST"])
@@ -39,10 +37,7 @@ def get_search_results():
 @app.route("/movies/popular", methods=["GET"])
 def get_popular_movies():
     try:
-        result_data = [
-            'Some Genre'
-            for _ in range(10)
-        ]
+        result_data = ["Some Genre" for _ in range(10)]
         return jsonify(result_data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -51,10 +46,7 @@ def get_popular_movies():
 @app.route("/movies/controversial", methods=["GET"])
 def get_controversial_movies():
     try:
-        result_data = [
-            'Some Other Genre'
-            for _ in range(10)
-        ]
+        result_data = ["Some Other Genre" for _ in range(10)]
         return jsonify(result_data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -69,8 +61,8 @@ def calculate_users_skew():
         opinion = data.get("opinion")
 
         if opinion and (films or genres):
-            better = ['Genre 1', 'Genre 2', 'Genre 3']
-            worse = ['Genre 4', 'Genre 5', 'Genre 6']
+            better = ["Genre 1", "Genre 2", "Genre 3"]
+            worse = ["Genre 4", "Genre 5", "Genre 6"]
             return jsonify({"better": better, "worse": worse})
         else:
             return (
@@ -89,16 +81,14 @@ def calculate_users_skew():
 def movie_prediction():
     try:
         data = request.get_json()
-        movie = data.get("movie", '')
+        movie = data.get("movie", "")
         users = data.get("users", [])
         if users and movie:
             rating = 4.37
             return jsonify(rating)
         else:
             return (
-                jsonify(
-                    {"error": "Please provide at least one user and a movie."}
-                ),
+                jsonify({"error": "Please provide at least one user and a movie."}),
                 400,
             )
 
