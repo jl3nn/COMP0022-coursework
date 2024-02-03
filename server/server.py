@@ -48,8 +48,8 @@ def get_popular_movies():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/movies/contrevertial", methods=["GET"])
-def get_controvertial_movies():
+@app.route("/movies/controversial", methods=["GET"])
+def get_controversial_movies():
     try:
         result_data = [
             'Some Other Genre'
