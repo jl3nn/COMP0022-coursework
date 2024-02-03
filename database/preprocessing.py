@@ -1,11 +1,13 @@
 import os
 import pandas as pd
 
-# Ensure the processed data directory exists
+# Set up data directories
 additional_dir = "additional/"
 movielens_dir = "movielens/"
 personality_dir = "personality/"
 processed_dir = "processed/"
+
+# Ensure the processed data directory exists
 os.makedirs(processed_dir, exist_ok=True)
 
 # Load data
