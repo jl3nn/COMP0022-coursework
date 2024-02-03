@@ -47,7 +47,7 @@ function UserReportPage() {
                 aria-labelledby="demo-radio-buttons-group-label"
                 name="radio-buttons-group"
                 value={opinion}
-                onChange={(event) => setOppinion(parseInt(event.target.value))}
+                onChange={(event) => setOpinion(parseInt(event.target.value))}
             >
                 <FormControlLabel value="1" control={<Radio />} label="Like" />
                 <FormControlLabel value="-1" control={<Radio />} label="Dislike" />
