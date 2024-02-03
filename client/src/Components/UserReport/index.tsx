@@ -5,7 +5,7 @@ import AutocompleteWithFetch from '../common/AutocompleteSelector';
 function UserReportPage() {
     const [genre, setGenres] = useState(null as string | null);
     const [film, setFilms] = useState(null as string | null);
-    const [opinion, setOppinion] = useState(null as number | null);
+    const [opinion, setOpinion] = useState(null as number | null);
     const [better, setBetter] = useState([] as string[]);
     const [worse, setWorse] = useState([] as string[]);
 
