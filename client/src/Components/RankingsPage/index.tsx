@@ -29,7 +29,7 @@ function RankingsPage() {
                 <Paper sx={{maxHeight: 'calc(50vh - 100px)', overflow:"auto",  width:600}}>
                     <Typography variant="h4">Most Contrevertial Genres</Typography>
                     <Box sx={{maxHeight: 'calc(50vh - 150px)', overflow:"auto",  width:600}}>
-                        {contrevertialMovies.map((m) => <Typography variant="h6">{m}</Typography>)}
+                        {controversialMovies.map((m) => <Typography variant="h6">{m}</Typography>)}
                     </Box>
                 </Paper>
         </Stack>
