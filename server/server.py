@@ -20,7 +20,6 @@ def get_search_results():
         tags = data.get("tags", [])
         genres = data.get("genres", [])
         date = data.get("date", [])
-        # Mock data for testing purposes
         result_data = [
             {
                 "imageUrl": "https://resizing.flixster.com/dV1vfa4w_dB4wzk7A_VzThWUWw8=/ems.cHJkLWVtcy1hc3NldHMvbW92aWVzLzEyZDMyYjZmLThmNzAtNDliNC1hMjFmLTA2ZWY4M2UyMjJhMi5qcGc=",
@@ -41,14 +40,7 @@ def get_search_results():
 def get_popular_movies():
     try:
         result_data = [
-            {
-                "imageUrl": "https://resizing.flixster.com/dV1vfa4w_dB4wzk7A_VzThWUWw8=/ems.cHJkLWVtcy1hc3NldHMvbW92aWVzLzEyZDMyYjZmLThmNzAtNDliNC1hMjFmLTA2ZWY4M2UyMjJhMi5qcGc=",
-                "title": "Server is UP",
-                "rating": 5,
-                "genre": "Bar",
-                "tags": ["bla"],
-                "ratingsList": [1, 2, 3, 4, 5],
-            }
+            'Some Genre'
             for _ in range(10)
         ]
         return jsonify(result_data)
@@ -60,14 +52,7 @@ def get_popular_movies():
 def get_controvertial_movies():
     try:
         result_data = [
-            {
-                "imageUrl": "https://resizing.flixster.com/dV1vfa4w_dB4wzk7A_VzThWUWw8=/ems.cHJkLWVtcy1hc3NldHMvbW92aWVzLzEyZDMyYjZmLThmNzAtNDliNC1hMjFmLTA2ZWY4M2UyMjJhMi5qcGc=",
-                "title": "Server is UP",
-                "rating": 5,
-                "genre": "Bar",
-                "tags": ["bla"],
-                "ratingsList": [1, 2, 3, 4, 5],
-            }
+            'Some Other Genre'
             for _ in range(10)
         ]
         return jsonify(result_data)
@@ -81,11 +66,12 @@ def calculate_users_skew():
         data = request.get_json()
         genres = data.get("genres")
         films = data.get("films")
-        users = data.get("users")
+        opinion = data.get("opinion")
 
-        if users and (films or genres):
-            skew_result = "higher"  # Replace with your actual skew calculation
-            return jsonify(skew_result)
+        if opinion and (films or genres):
+            better = ['Genre 1', 'Genre 2', 'Genre 3']
+            worse = ['Genre 4', 'Genre 5', 'Genre 6']
+            return jsonify({"better": better, "worse": worse})
         else:
             return (
                 jsonify(
