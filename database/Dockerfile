@@ -1,16 +1,18 @@
-# Stage 1: Build Python Image and Run preprocessing.py
+# Stage 1: Build Python image and run preprocessing.py
 FROM python:3.11 AS builder
 
 WORKDIR /app
 
-COPY *.csv /app/
-COPY preprocessing.py /app/
+COPY additional ./additional
+COPY movielens ./movielens
+COPY personality ./personality
+COPY preprocessing.py .
 
 RUN pip install pandas
 
 RUN python preprocessing.py
 
-# Stage 2: Build PostgreSQL Image
+# Stage 2: Build PostgreSQL image
 FROM postgres:latest
 
 ENV POSTGRES_DB comp0022
@@ -19,7 +21,7 @@ ENV POSTGRES_PASSWORD top_secret_password
 
 WORKDIR /docker-entrypoint-initdb.d
 
-COPY init.sql /docker-entrypoint-initdb.d/
-COPY --from=builder /app/processed/*.csv /docker-entrypoint-initdb.d/
+COPY init.sql .
+COPY --from=builder /app/processed/*.csv .
 
 EXPOSE 5432

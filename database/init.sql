@@ -48,7 +48,6 @@ CREATE TABLE movies_genres (
     FOREIGN KEY(genre_id) REFERENCES genres(genre_id)
 );
 
-
 COPY movies (movie_id, title, imdb_id, tmdb_id, image_url, year) FROM '/docker-entrypoint-initdb.d/movies.csv' DELIMITER ',' CSV HEADER;
 COPY users (user_id) FROM '/docker-entrypoint-initdb.d/users.csv' DELIMITER ',' CSV HEADER;
 COPY ratings (user_id, movie_id, rating, timestamp) FROM '/docker-entrypoint-initdb.d/ratings.csv' DELIMITER ',' CSV HEADER;

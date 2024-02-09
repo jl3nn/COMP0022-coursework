@@ -1,7 +1,7 @@
 import psycopg
 from typing import Optional
 
-db_params = {
+DB_PARAMS = {
     "dbname": "comp0022",
     "user": "admin",
     "password": "top_secret_password",
@@ -11,7 +11,7 @@ db_params = {
 
 
 def execute_query(query: str, query_params: Optional[dict] = None) -> list:
-    with psycopg.connect(**db_params) as conn:
+    with psycopg.connect(**DB_PARAMS) as conn:
         with conn.cursor() as cursor:
             cursor.execute(query, query_params)
             results = cursor.fetchall()

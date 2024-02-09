@@ -1,16 +1,21 @@
-import pandas as pd
 import os
+import pandas as pd
+
+# Set up data directories
+additional_dir = "additional/"
+movielens_dir = "movielens/"
+personality_dir = "personality/"
+processed_dir = "processed/"
 
 # Ensure the processed data directory exists
-processed_data_dir = "processed/"
-os.makedirs(processed_data_dir, exist_ok=True)
+os.makedirs(processed_dir, exist_ok=True)
 
 # Load data
-movies_df = pd.read_csv("movies.csv")
-links_df = pd.read_csv("links.csv", dtype={"tmdbId": "str"})
-images_df = pd.read_csv("image_assets.csv")
-ratings_df = pd.read_csv("ratings.csv")
-tags_df = pd.read_csv("tags.csv")
+images_df = pd.read_csv(f"{additional_dir}images.csv")
+links_df = pd.read_csv(f"{movielens_dir}links.csv", dtype={"tmdbId": "str"})
+movies_df = pd.read_csv(f"{movielens_dir}movies.csv")
+ratings_df = pd.read_csv(f"{movielens_dir}ratings.csv")
+tags_df = pd.read_csv(f"{movielens_dir}tags.csv")
 
 # Normalize movies with links data
 movies_df = (
@@ -19,8 +24,8 @@ movies_df = (
     .drop(columns=["item_id"])
 )
 
-# Extract year, clean title
-movies_df["year"] = movies_df["title"].str.extract(r"(\d{4})")[0].astype('Int64')
+# Extract year and clean title
+movies_df["year"] = movies_df["title"].str.extract(r"(\d{4})")[0].astype("Int64")
 movies_df["title"] = movies_df["title"].str.replace(r" \(\d{4}\)", "", regex=True)
 
 # Create genre table and movie-genre association
@@ -37,7 +42,7 @@ movie_genres_df = temp_df.merge(
     genres_df, left_on="genres", right_on="genre", how="left"
 )[["movieId", "genreId"]]
 
-# Drop genres column from movies_df as it's now redundant
+# Drop redundant genres column from movies_df
 movies_df.drop(columns=["genres"], inplace=True)
 
 # Convert timestamps in ratings and tags
@@ -50,9 +55,9 @@ users_df = (
 )
 
 # Save processed data
-movies_df.to_csv(f"{processed_data_dir}movies.csv", index=False)
-ratings_df.to_csv(f"{processed_data_dir}ratings.csv", index=False)
-tags_df.to_csv(f"{processed_data_dir}tags.csv", index=False)
-users_df.to_csv(f"{processed_data_dir}users.csv", index=False)
-genres_df.to_csv(f"{processed_data_dir}genres.csv", index=False)
-movie_genres_df.to_csv(f"{processed_data_dir}movies_genres.csv", index=False)
+movies_df.to_csv(f"{processed_dir}movies.csv", index=False)
+ratings_df.to_csv(f"{processed_dir}ratings.csv", index=False)
+tags_df.to_csv(f"{processed_dir}tags.csv", index=False)
+users_df.to_csv(f"{processed_dir}users.csv", index=False)
+genres_df.to_csv(f"{processed_dir}genres.csv", index=False)
+movie_genres_df.to_csv(f"{processed_dir}movies_genres.csv", index=False)
