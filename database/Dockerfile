@@ -6,6 +6,7 @@ WORKDIR /app
 COPY additional ./additional
 COPY movielens ./movielens
 COPY personality ./personality
+COPY requirements.txt .
 COPY preprocessing.py .
 
 RUN pip install --no-cache-dir -r requirements.txt
