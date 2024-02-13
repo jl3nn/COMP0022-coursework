@@ -1,2 +1,2 @@
 from . import autocomplete
-from . import movies
+from . import genres
