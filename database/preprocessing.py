@@ -23,12 +23,10 @@ def normalize_movies_with_links(movies_df, links_df, images_df):
 
 def process_movies_df(movies_df):
     """Extract year, clean title, and convert imdb_id format in movies_df."""
-    movies_df["year"] = movies_df["title"].str.extract(r"(\d{4})")[
-        0].astype("Int64")
-    movies_df["title"] = movies_df["title"].str.replace(
-        r" \(\d{4}\)", "", regex=True)
-    movies_df.rename(columns={'imdbId': 'imdb_id'}, inplace=True)
-    movies_df['imdb_id'] = movies_df['imdb_id'].apply(lambda x: f"tt{x:07}")
+    movies_df["year"] = movies_df["title"].str.extract(r"(\d{4})")[0].astype("Int64")
+    movies_df["title"] = movies_df["title"].str.replace(r" \(\d{4}\)", "", regex=True)
+    movies_df.rename(columns={"imdbId": "imdb_id"}, inplace=True)
+    movies_df["imdb_id"] = movies_df["imdb_id"].apply(lambda x: f"tt{x:07}")
 
 
 def create_genre_tables(movies_df):
@@ -37,11 +35,13 @@ def create_genre_tables(movies_df):
     exploded_genres = exploded_genres[exploded_genres != "(no genres listed)"]
     genres_df = pd.DataFrame(exploded_genres.unique(), columns=["genre"])
     genres_df["genreId"] = genres_df.index + 1
-    temp_df = movies_df.assign(
-        genres=movies_df["genres"].str.split("|")).explode("genres")
+    temp_df = movies_df.assign(genres=movies_df["genres"].str.split("|")).explode(
+        "genres"
+    )
     temp_df = temp_df[temp_df["genres"] != "(no genres listed)"]
     movie_genres_df = temp_df.merge(
-        genres_df, left_on="genres", right_on="genre", how="left")[["movieId", "genreId"]]
+        genres_df, left_on="genres", right_on="genre", how="left"
+    )[["movieId", "genreId"]]
     return genres_df, movie_genres_df
 
 
@@ -53,22 +53,25 @@ def map_names_to_ids(names, mapping_dict):
 def process_imdb_df(imdb_df, movies_df):
     """Process IMDb data frame to include movieId and map actor/director names to IDs."""
     # Filter imdb_df to only include movies present in movies_df
-    imdb_df = imdb_df[imdb_df['imdb_id'].isin(movies_df['imdb_id'])]
+    imdb_df = imdb_df[imdb_df["imdb_id"].isin(movies_df["imdb_id"])]
     # Link data
-    imdb_movie_mapping = movies_df[['movieId', 'imdb_id']]
+    imdb_movie_mapping = movies_df[["movieId", "imdb_id"]]
     # Merge this mapping with imdb_df to get movieId alongside actors and directors
-    imdb_df = imdb_df.merge(imdb_movie_mapping, on='imdb_id', how='inner')
+    imdb_df = imdb_df.merge(imdb_movie_mapping, on="imdb_id", how="inner")
     return imdb_df
 
 
 def process_actor_director_data(imdb_df):
     """Process actor and director data, creating unique IDs and mapping."""
-    actors_df = pd.DataFrame(imdb_df['actors'].str.split(',').explode(
-    ).dropna().unique(), columns=['name']).reset_index(drop=False)
-    actors_df.rename(columns={'index': 'actor_id'}, inplace=True)
-    directors_df = pd.DataFrame(imdb_df['directors'].str.split(
-        ',').explode().dropna().unique(), columns=['name']).reset_index(drop=False)
-    directors_df.rename(columns={'index': 'director_id'}, inplace=True)
+    actors_df = pd.DataFrame(
+        imdb_df["actors"].str.split(",").explode().dropna().unique(), columns=["name"]
+    ).reset_index(drop=False)
+    actors_df.rename(columns={"index": "actor_id"}, inplace=True)
+    directors_df = pd.DataFrame(
+        imdb_df["directors"].str.split(",").explode().dropna().unique(),
+        columns=["name"],
+    ).reset_index(drop=False)
+    directors_df.rename(columns={"index": "director_id"}, inplace=True)
     return actors_df, directors_df
 
 
@@ -80,17 +83,22 @@ def save_dataframes(base_dir, **dfs):
 
 def explode_and_map_ids(imdb_df, mapping_df, id_column_name, new_column_name):
     """Explode and map actor or director names to IDs, keeping movieId for linkage."""
-    mapping_dict = mapping_df.set_index('name')[id_column_name].to_dict()
-    imdb_df[new_column_name] = imdb_df[id_column_name.replace('_id', 's')].str.split(',').apply(
-        lambda x: map_names_to_ids(x, mapping_dict))
-    return imdb_df.explode(new_column_name)[['movieId', new_column_name]].dropna(subset=[new_column_name])
+    mapping_dict = mapping_df.set_index("name")[id_column_name].to_dict()
+    imdb_df[new_column_name] = (
+        imdb_df[id_column_name.replace("_id", "s")]
+        .str.split(",")
+        .apply(lambda x: map_names_to_ids(x, mapping_dict))
+    )
+    return imdb_df.explode(new_column_name)[["movieId", new_column_name]].dropna(
+        subset=[new_column_name]
+    )
 
 
 def main():
     base_dirs = {
         "additional": "additional/",
         "movielens": "movielens/",
-        "processed": "processed/"
+        "processed": "processed/",
     }
 
     # Ensure the processed data directory exists
@@ -98,12 +106,11 @@ def main():
 
     # Load data
     images_df = load_csv(base_dirs["additional"], "images.csv")
-    links_df = load_csv(base_dirs["movielens"],
-                        "links.csv", dtype={"tmdbId": "str"})
+    links_df = load_csv(base_dirs["movielens"], "links.csv", dtype={"tmdbId": "str"})
     movies_df = load_csv(base_dirs["movielens"], "movies.csv")
     ratings_df = load_csv(base_dirs["movielens"], "ratings.csv")
     tags_df = load_csv(base_dirs["movielens"], "tags.csv")
-    imdb_df = load_csv(base_dirs["additional"], "imdb_data.csv")
+    imdb_df = load_csv(base_dirs["additional"], "imdb.csv")
 
     # Process data
     movies_df = normalize_movies_with_links(movies_df, links_df, images_df)
@@ -112,29 +119,34 @@ def main():
     movies_df.drop(columns=["genres"], inplace=True)
     ratings_df["timestamp"] = pd.to_datetime(ratings_df["timestamp"], unit="s")
     tags_df["timestamp"] = pd.to_datetime(tags_df["timestamp"], unit="s")
-    users_df = pd.concat(
-        [ratings_df["userId"], tags_df["userId"]]).drop_duplicates().to_frame()
+    users_df = (
+        pd.concat([ratings_df["userId"], tags_df["userId"]])
+        .drop_duplicates()
+        .to_frame()
+    )
     imdb_df = process_imdb_df(imdb_df, movies_df)
     actors_df, directors_df = process_actor_director_data(imdb_df)
 
     # Explode and map actor and director IDs
-    movie_actors_df = explode_and_map_ids(
-        imdb_df, actors_df, 'actor_id', 'actor_ids')
+    movie_actors_df = explode_and_map_ids(imdb_df, actors_df, "actor_id", "actor_ids")
     movie_directors_df = explode_and_map_ids(
-        imdb_df, directors_df, 'director_id', 'director_ids')
+        imdb_df, directors_df, "director_id", "director_ids"
+    )
 
     # Save processed data
-    save_dataframes(base_dirs["processed"],
-                    movies=movies_df,
-                    ratings=ratings_df,
-                    tags=tags_df,
-                    users=users_df,
-                    genres=genres_df,
-                    movies_genres=movie_genres_df,
-                    actors=actors_df,
-                    directors=directors_df,
-                    movies_actors=movie_actors_df,
-                    movies_directors=movie_directors_df)
+    save_dataframes(
+        base_dirs["processed"],
+        movies=movies_df,
+        ratings=ratings_df,
+        tags=tags_df,
+        users=users_df,
+        genres=genres_df,
+        movies_genres=movie_genres_df,
+        actors=actors_df,
+        directors=directors_df,
+        movies_actors=movie_actors_df,
+        movies_directors=movie_directors_df,
+    )
 
 
 if __name__ == "__main__":
