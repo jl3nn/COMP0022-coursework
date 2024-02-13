@@ -11,7 +11,7 @@ def get_genres(agg_func: str, precision: int = 3) -> Response:
             f"""
             SELECT
                 g.genre,
-                round({agg_func}(r.rating)::numeric, {precision}) AS statistic
+                round({agg_func}(r.rating)::numeric, {precision}) AS stat
             FROM
                 genres g
             INNER JOIN
@@ -25,13 +25,13 @@ def get_genres(agg_func: str, precision: int = 3) -> Response:
             HAVING
                 {agg_func}(r.rating) IS NOT NULL
             ORDER BY
-                statistic DESC
+                stat DESC
             ;
             """
         )
 
-        # TODO: Modify client to include statistic
-        # return json_response(results, lambda row: {"genre": row[0], agg_func: row[1]})
+        # TODO: Modify client to include stat
+        # return json_response(results, lambda row: {"genre": row[0], "stat": row[1]})
         return json_response(results, lambda row: row[0])
     except Exception as e:
         return json_error(e)
