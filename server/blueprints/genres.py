@@ -21,7 +21,7 @@ def get_genres(agg_func: str, precision: int = 3) -> Response:
             LEFT JOIN
                 ratings r ON m.movie_id = r.movie_id
             GROUP BY
-                g.genre
+                g.genre_id
             HAVING
                 {agg_func}(r.rating) IS NOT NULL
             ORDER BY
