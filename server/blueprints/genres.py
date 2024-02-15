@@ -9,7 +9,7 @@ def get_genres(agg_func: str, precision: int = 3) -> Response:
         f"""
         SELECT
             g.genre,
-            round({agg_func}(r.rating)::numeric, {precision}) AS stat
+            round({agg_func}(r.rating)::numeric, {precision}) AS statistic
         FROM
             genres g
         INNER JOIN
@@ -19,11 +19,11 @@ def get_genres(agg_func: str, precision: int = 3) -> Response:
         GROUP BY
             g.genre_id
         ORDER BY
-            stat DESC
+            statistic DESC
         ;
         """,
-        # TODO: Modify client to include stat
-        # func=lambda row: {"genre": row[0], "stat": row[1]},
+        # TODO: Modify client to include statistic
+        # func=lambda row: {"genre": row[0], "statistic": row[1]},
     )
 
 
