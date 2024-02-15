@@ -9,7 +9,7 @@ def get_genres(agg_func: str, precision: int = 3) -> Response:
         f"""
         SELECT
             g.genre,
-            round({agg_func}(r.rating)::numeric, {precision}) AS statistic
+            ROUND({agg_func}(r.rating)::NUMERIC, {precision}) AS statistic
         FROM
             genres g
         INNER JOIN
@@ -29,9 +29,9 @@ def get_genres(agg_func: str, precision: int = 3) -> Response:
 
 @app.route("/popular", methods=["GET"])
 def get_popular_genres() -> Response:
-    return get_genres("avg")
+    return get_genres("AVG")
 
 
 @app.route("/controversial", methods=["GET"])
 def get_controversial_genres() -> Response:
-    return get_genres("stddev")
+    return get_genres("STDDEV")
