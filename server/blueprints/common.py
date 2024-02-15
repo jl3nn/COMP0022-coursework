@@ -1,4 +1,4 @@
-from flask import jsonify, Response
+from flask import jsonify, make_response, Response
 import psycopg
 from typing import Any, Callable, Optional
 
@@ -28,7 +28,7 @@ def get_response(
 ) -> Response:
     try:
         results = execute_query(query, params)
-        return jsonify(list(map(func, results)))
+        return make_response(jsonify(list(map(func, results))), 200)
     except Exception as error:
         print(f"error: {str(error)}")
-        return jsonify({"error": str(error)}), 500
+        return make_response(jsonify({"error": str(error)}), 500)
