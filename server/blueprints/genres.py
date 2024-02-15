@@ -17,13 +17,9 @@ def get_genres(agg_func: str, precision: int = 3) -> Response:
             INNER JOIN
                 movies_genres mg ON g.genre_id = mg.genre_id
             INNER JOIN
-                movies m ON mg.movie_id = m.movie_id
-            LEFT JOIN
-                ratings r ON m.movie_id = r.movie_id
+                ratings r ON mg.movie_id = r.movie_id
             GROUP BY
                 g.genre_id
-            HAVING
-                {agg_func}(r.rating) IS NOT NULL
             ORDER BY
                 stat DESC
             ;
