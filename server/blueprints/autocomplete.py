@@ -1,30 +1,24 @@
-from .common import json_response, json_error
-from .connector import execute_query
-from flask import Blueprint, request, Response
+from .utils import get_response
+from flask import Blueprint, jsonify, request, Response
 
 app = Blueprint("autocomplete", __name__)
 
 
 def autocomplete(field: str, table: str, limit: int = 5) -> Response:
-    try:
-        results = execute_query(
-            f"""
-            SELECT DISTINCT
-                {field}
-            FROM
-                {table}
-            WHERE
-                LOWER({field}) LIKE %(prefix)s
-            LIMIT
-                {limit}
-            ;
-            """,
-            {"prefix": request.args.get("prefix", "").lower() + "%"},
-        )
-
-        return json_response(results, lambda row: row[0])
-    except Exception as e:
-        return json_error(e)
+    return get_response(
+        f"""
+        SELECT DISTINCT
+            {field}
+        FROM
+            {table}
+        WHERE
+            LOWER({field}) LIKE %(prefix)s
+        LIMIT
+            {limit}
+        ;
+        """,
+        params={"prefix": request.args.get("prefix", "").lower() + "%"},
+    )
 
 
 @app.route("/genre", methods=["GET"])
@@ -55,9 +49,10 @@ def autocomplete_metric_degree():
         matches = [
             user for user in sample_personalities if user.lower().startswith(prefix)
         ]
-        return json_response(matches, lambda row: row)
-    except Exception as e:
-        return json_error(e)
+        return jsonify(list(map(lambda row: row, matches)))
+    except Exception as error:
+        print(f"error: {str(error)}")
+        return jsonify({"error": str(error)}), 500
 
 
 @app.route("/metric", methods=["GET"])
@@ -68,6 +63,7 @@ def autocomplete_metric():
         matches = [
             user for user in sample_personalities if user.lower().startswith(prefix)
         ]
-        return json_response(matches, lambda row: row)
-    except Exception as e:
-        return json_error(e)
+        return jsonify(list(map(lambda row: row, matches)))
+    except Exception as error:
+        print(f"error: {str(error)}")
+        return jsonify({"error": str(error)}), 500
