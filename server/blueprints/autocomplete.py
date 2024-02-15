@@ -1,4 +1,4 @@
-from .utils import get_response
+from .common import get_response
 from flask import Blueprint, jsonify, request, Response
 
 app = Blueprint("autocomplete", __name__)
