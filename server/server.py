@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 # Register blueprints
 app.register_blueprint(blueprints.autocomplete.app, url_prefix="/autocomplete")
-app.register_blueprint(blueprints.movies.app, url_prefix="/movies")
+app.register_blueprint(blueprints.genres.app, url_prefix="/genres")
 
 # Initialize cross origin resource sharing
 CORS(app, origins="http://localhost")

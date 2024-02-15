@@ -10,7 +10,7 @@ DB_PARAMS = {
 }
 
 
-def execute_query(query: str, query_params: Optional[dict] = None) -> list:
+def execute_query(query: str, query_params: Optional[dict] = None) -> list[tuple]:
     with psycopg.connect(**DB_PARAMS) as conn:
         with conn.cursor() as cursor:
             cursor.execute(query, query_params)
