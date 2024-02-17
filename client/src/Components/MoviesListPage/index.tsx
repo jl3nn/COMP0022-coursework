@@ -1,26 +1,28 @@
 // App.js
 import React, { useEffect, useState } from 'react';
 import { useSearch } from './SearchContext/context';
-import { Paper, Stack } from '@mui/material';
+import { Button, Paper, Stack } from '@mui/material';
 import SearchComponent from './search';
 import MovieCards from '../common/MovieCard';
+import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 
 type Movie = {
     imageUrl: string;
     title: string;
     year: string;
     rating: number;
-    genre: string;
-    tags: string[];
-    ratingsList: number[];
+    movieId: string;
 }
 
 function MovieListPage() {
     const {searchText, ratings, tags, genres, date} = useSearch();
     const [data, setData] = useState<Movie[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [allDataLoaded, setAllDataLoaded] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(false);
             try {
                 const response = await fetch('http://localhost:5555/get-search-results', {
                 method: 'POST',
@@ -32,50 +34,71 @@ function MovieListPage() {
                     ratings,
                     tags,
                     genres,
-                    date
+                    date,
+                    numLoaded: 0,
                 }),
                 mode: 'cors'
                 });
 
                 if (!response.ok) {
-                    // throw new Error('Failed to fetch data');
-                    setData([{
-                        imageUrl: '',
-                        title: 'Server Is Broken',
-                        year: '2021',
-                        rating: 1   ,
-                        genre: 'Bar',
-                        tags: ['bla'],
-                        ratingsList: [1, 2, 3, 4, 5]
-                    }])
+                    setData([])
+                    console.log('Error fetching data at server');
                     return;
                 }
-
+                
                 const result = await response.json();
-                setData(result);
+                setAllDataLoaded(result.all_loaded);
+                setData(result.results);
             } catch (error: any) {
-                // console.error('Error fetching data:', error.message);
-                setData([{
-                    imageUrl: '',
-                    title: 'Server is down',
-                    year: '2021',
-                    rating: 1,
-                    genre: 'Bar',
-                    tags: ['bla'],
-                    ratingsList: [1, 2, 3, 4, 5]
-                }])
+                setData([])
+                console.log('Server likely down', error);
             }
+            setLoading(false);
         };
-
         fetchData();
     }, [searchText, ratings, tags, genres, date]);
+
+    const loadMore = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch('http://localhost:5555/get-search-results', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                searchText,
+                ratings,
+                tags,
+                genres,
+                date,
+                numLoaded: data.length,
+            }),
+            mode: 'cors'
+            });
+
+            if (!response.ok) {
+                console.log('Error fetching data at server');
+                return;
+            }
+
+            const result = await response.json();
+            setAllDataLoaded(result.all_loaded);
+            setData([...data, ...result.results]);
+        } catch (error: any) {
+            console.log('Server likely down', error);
+        }
+        setLoading(false);
+    }
 
     return (
         <Stack spacing={2} alignItems="center" margin={5}>
                 <SearchComponent/>
                 <Paper sx={{maxHeight: 'calc(100vh - 250px)', overflow:"auto",  width:600}}>
-                    <MovieCards data={data} />
+                    {loading ? <HourglassBottomIcon /> : <MovieCards data={data} />}
+                    {!loading && !allDataLoaded && <Button onClick={loadMore}>Load More</Button>}
                 </Paper>
+                
         </Stack>
     );
 }

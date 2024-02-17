@@ -2,7 +2,8 @@ import blueprints
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from prometheus_flask_exporter import PrometheusMetrics
-from blueprints.connector import execute_query
+
+from blueprints.common import execute_query
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -17,6 +18,53 @@ CORS(app, origins="http://localhost")
 # Create a new Prometheus metrics export configuration
 PrometheusMetrics(app)
 
+@app.route("/get-movie", methods=["GET"])
+def get_movie_details():
+    try:
+        movie_id = request.args.get("movieId")
+        query = """
+            select
+                m.image_url,
+                m.title,
+                m.year,
+                avg(r.rating),
+                array_agg(distinct g.genre) as genres,
+                array_agg(distinct t.tag) as tags,
+                array_agg(r.rating) filter (WHERE r.rating IS NOT NULL) as ratings,
+                array_agg(distinct a.name) as actors,
+                array_agg(distinct d.name) as directors
+            from movies m
+            left join movies_genres mg ON m.movie_id = mg.movie_id
+            left join genres g ON mg.genre_id = g.genre_id
+            left join tags t ON m.movie_id = t.movie_id
+            left join movies_actors ma on m.movie_id = ma.movie_id
+            left join actors a on ma.actor_id = a.actor_id
+            left join movies_directors md on m.movie_id = md.movie_id
+            left join directors d on md.director_id = d.director_id
+            left join ratings r on m.movie_id = r.movie_id
+            where m.movie_id = %(movie_id)s
+            group by m.title, m.image_url, m.year, m.movie_id
+        """
+        params = {"movie_id": movie_id}
+        results = execute_query(query, params)
+
+        result_data = [
+            {
+                "imageUrl": row[0],
+                "title": row[1],
+                "year": row[2],
+                "rating": row[3],
+                "genres": row[4],
+                "tags": row[5],
+                "ratingsList": row[6],
+                "actors": row[7],
+                "directors": row[8]
+            }
+            for row in results
+        ]
+        return jsonify(result_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/get-search-results", methods=["POST"])
 def get_search_results():
@@ -27,69 +75,86 @@ def get_search_results():
         tags = data.get("tags", [])
         genres = data.get("genres", [])
         date = data.get("date", [])
+        num_loaded = data.get("numLoaded", 0)
 
         # Initialize the query with the common part
         query = """
-            SELECT
+            select
                 m.image_url,
                 m.title,
                 m.year,
-                AVG(r.rating),
-                ARRAY_AGG(DISTINCT g.genre) AS genres,
-                ARRAY_AGG(DISTINCT t.tag) AS tags,
-                ARRAY_AGG(r.rating) FILTER (WHERE r.rating IS NOT NULL) AS ratings
-            FROM movies m
-            LEFT JOIN ratings r ON m.movie_id = r.movie_id
-            LEFT JOIN movies_genres mg ON m.movie_id = mg.movie_id
-            LEFT JOIN genres g ON mg.genre_id = g.genre_id
-            LEFT JOIN tags t ON m.movie_id = t.movie_id
-            WHERE 1=1
+                avg(r.rating),
+                m.movie_id
+            from movies m
+            left join ratings r on m.movie_id = r.movie_id
         """
 
-        # Add conditions based on whether the values are set
         if searchText:
-            query += " AND LOWER(m.title) LIKE LOWER(%(title)s)"
+            query += """
+            left join movies_actors ma on m.movie_id = ma.movie_id
+            left join actors a on ma.actor_id = a.actor_id
+            left join movies_directors md on m.movie_id = md.movie_id
+            left join directors d on md.director_id = d.director_id"""
+
         if genres:
-            # Adjust to use ANY with an array for genres
-            query += " AND g.genre = ANY(%(genres)s)"
+            query += """
+            left join movies_genres mg on m.movie_id = mg.movie_id
+            left join genres g on mg.genre_id = g.genre_id"""
 
         if tags:
-            query += " AND t.tag = ANY(%(tags)s)"
+            query += """
+            left join tags t on m.movie_id = t.movie_id"""
+
+        
+        query += " where 1=1"
+
+        if searchText:
+            query += " and (LOWER(m.title) like lower(%(search)s) or lower(a.name) like lower(%(search)s) or lower(d.name) like lower(%(search)s))"
+
+        if genres:
+            # Adjust to use ANY with an array for genres
+            query += " and g.genre = any(%(genres)s)"
+
+        if tags:
+            query += " and t.tag = any(%(tags)s)"
 
         # Ensure the rest of your query uses named placeholders consistently
         query += """
-            AND m.year BETWEEN %(yearstart)s AND %(yearend)s
-            GROUP BY m.title, m.image_url
-            HAVING AVG(r.rating) BETWEEN %(ratingstart)s AND %(ratingend)s
-            ORDER BY AVG(r.rating) DESC
-            LIMIT 15
+            and m.year between %(yearstart)s and %(yearend)s
+            group by m.title, m.image_url, m.year, m.movie_id
+            """
+        if ratings[0] != 0 or ratings[1] != 5:
+            query += """having avg(r.rating) between %(ratingstart)s and %(ratingend)s"""
+        query += """
+            order by avg(r.rating) desc
+            offset %(num_loaded)s
+            limit 15
         """
 
         # Prepare parameters
         params = {
-            'title': f"%{searchText}%",
+            'search': f"%{searchText}%",
             'genres': genres,
             'tags': tags,
             'yearstart': date[0],
             'yearend': date[1],
             'ratingstart': ratings[0],
-            'ratingend': ratings[1]
+            'ratingend': ratings[1],
+            'num_loaded': num_loaded
         }
 
         results = execute_query(query, params)
 
-        result_data = [
+        result_data = {'all_loaded': len(results) < 15, 'results': [
             {
                 "imageUrl": row[0],
                 "title": row[1],
                 "year": row[2],
-                "averageRating": row[3],
-                "genres": row[4],
-                "tags": row[5],
-                "ratingsList": row[6]
+                "rating": row[3],
+                "movieId": row[4]
             }
             for row in results
-        ]
+        ]}
         return jsonify(result_data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500

@@ -21,9 +21,19 @@ interface MovieCardProps {
     title: string;
     year: string;
     rating: number;
-    genre: string;
+    movieId: string;
+}
+
+type fullMovieInfo = {
+    imageUrl: string;
+    title: string;
+    year: string;
+    rating: number;
+    genres: string[];
     tags: string[];
     ratingsList: number[];
+    actors: string[];
+    directors: string[];
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({
@@ -31,14 +41,24 @@ const MovieCard: React.FC<MovieCardProps> = ({
     title,
     year,
     rating,
-    genre,
-    tags,
-    ratingsList
+    movieId
 }) => {
+    const [movie, setMovie] = useState<fullMovieInfo | null>(null);
     const [isModalOpen, setModalOpen] = useState(false);
 
     const handleModalOpen = () => {
         setModalOpen(true);
+        //  fetch movie data from get-movie endpoint with movieId
+        fetch(`http://localhost:5555/get-movie?movieId=${movieId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            mode: 'cors'
+        }).then((response) => response.json())
+            .then((data) => {
+                setMovie(data[0]);
+            });
     };
 
     const handleModalClose = () => {
@@ -53,15 +73,15 @@ const MovieCard: React.FC<MovieCardProps> = ({
         {title} - {year}
     </Typography>;
     const Genre = <Typography variant="subtitle1" color="textSecondary">
-        {genre}
+        {movie && movie?.genres && movie?.genres.length > 0 ? movie.genres.join(' | ') : ''}
     </Typography>;
     const Rating = <Stack direction='row' spacing={1} paddingLeft={5}><Typography margin='auto' variant="h6" component="div">
         {rating}
     </Typography><StarIcon /></Stack>;
     const Tags = <Stack direction="row" spacing={1}>
-        {tags.map((tag, index) => (
+        {movie ? movie.tags.map((tag, index) => (
             <Chip key={index} label={tag} />
-        ))}
+        )) : ''}
     </Stack>;
     const MovieModal = <Modal open={isModalOpen} onClose={handleModalClose}>
         <Box
@@ -96,17 +116,35 @@ const MovieCard: React.FC<MovieCardProps> = ({
                     <ListItemText primary={'Average Rating:' + rating} />
                 </ListItem>
                 <div style={{ overflowY: 'auto', maxHeight: '100px', paddingRight: '16px' }}>
-                    {ratingsList.map((rating, index) => (
+                    {movie ? movie.ratingsList.map((rating, index) => (
                         <ListItem key={index} disablePadding>
                             <ListItemText primary={`Rating ${index + 1}: ${rating}`} />
                         </ListItem>
-                    ))}
+                    )) : ''}
                 </div>
             </List>
 
-            <Typography variant="body1" gutterBottom>
-                {"TODO put some stuff here"}
-            </Typography>
+            <List>
+                <ListItem disablePadding>
+                    <ListItemText primary={'Actors'} />
+                </ListItem>
+                {movie ? movie.actors.map((actor, index) => (
+                    <ListItem key={index} disablePadding>
+                        <ListItemText primary={actor} />
+                    </ListItem>
+                )) : ''}
+            </List>
+
+            <List>
+                <ListItem disablePadding>
+                    <ListItemText primary={'Directors'} />
+                </ListItem>
+                {movie ? movie.directors.map((director, index) => (
+                    <ListItem key={index} disablePadding>
+                        <ListItemText primary={director} />
+                    </ListItem>
+                )) : movie}
+            </List>
         </Box>
     </Modal>;
 
@@ -117,23 +155,20 @@ const MovieCard: React.FC<MovieCardProps> = ({
         <CardMedia
         component="img"
         alt={title}
-        width="200" // Adjust the width of the image
-        height="200" // Adjust the height to maintain the aspect ratio
+        width="200"
+        height="200"
         image={imageUrl}
-        sx={{ objectFit: 'cover', flex: '1' }} // Set flex: 1 for the image
+        sx={{ objectFit: 'cover', flex: '1' }}
         />
 
-        {/* Content */}
-        <CardContent sx={{ flex: '2' }}> {/* Adjust flex value based on your requirement */}
+        <CardContent sx={{ flex: '2' }}>
         <Stack direction="column" spacing={1}>
             <Stack direction="row" justifyContent="space-between">
             <Stack direction="column">
                 {Title}
-                {Genre}
             </Stack>
             {Rating}
             </Stack>
-            {Tags}
             {OpenModalButton}
         </Stack>
         </CardContent>
@@ -153,9 +188,7 @@ function MovieCards({ data } : { data : any[]}) {
                     title={movie.title}
                     year={movie.year}
                     rating={movie.rating}
-                    genre={movie.genre}
-                    tags={movie.tags}
-                    ratingsList={movie.ratingsList}
+                    movieId={movie.movieId}
                 />
             )
             )}

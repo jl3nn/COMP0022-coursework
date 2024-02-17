@@ -23,7 +23,7 @@ const AutocompleteWithFetch = ({ apiUrl, disabled, onChange, label, value, multi
     }
     fetch(url, { mode: 'cors' })
       .then((response) => response.json())
-      .then((data) => {setFetchOptions(data); console.log(data);});
+      .then((data) => {setFetchOptions(data)});
   }, [apiUrl, inputValue, suffix]);
 
   return (

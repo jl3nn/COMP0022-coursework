@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Paper, InputAdornment, Slider, IconButton, TextField, Stack, Button, Typography, Box } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterIcon from '@mui/icons-material/FilterList';
@@ -11,6 +11,7 @@ const SearchComponent = () => {
   const [data, setData] = useState([] as string[]);
   const [searchVal, setSearchVal] = useState('' as string);
   const [isFilterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const { setSearchFilter } = useSearch();
 
   const handleFilterIconClick = () => {
     setFilterDrawerOpen(true);
@@ -20,14 +21,22 @@ const SearchComponent = () => {
     setFilterDrawerOpen(false);
   };
 
+  const updateSearchText = (e: any) => {
+    setSearchFilter(e.target.value);
+  }
 
   async function onSearchChange(s: string) {
     setSearchVal(s);
     if (s === '') {
       setData([]);
+      setSearchFilter('');
       return;
+    } else {
+      let url = `http://localhost:5555/autocomplete/search?prefix=${s}`
+      fetch(url, { mode: 'cors' })
+        .then((response) => response.json())
+        .then((data) => {setData(data)});
     }
-    setData(['A', 'B', 'C']);
   }
 
   return (
@@ -47,6 +56,7 @@ const SearchComponent = () => {
         freeSolo
         options={data}
         inputValue={searchVal}
+        onSelect={updateSearchText}
         onInputChange={(e, newValue) => onSearchChange(newValue)}
         renderInput={(params) => (
           <TextField
