@@ -1,15 +1,21 @@
 import blueprints
 from flask import Flask, jsonify, request
-from flask_cors import CORS, cross_origin 
-import psycopg
-from flask import request
+from flask_cors import CORS
 from prometheus_flask_exporter import PrometheusMetrics
 from blueprints.connector import execute_query
 
+# Initialize Flask app
 app = Flask(__name__)
-metrics = PrometheusMetrics(app)
+
+# Register blueprints
 app.register_blueprint(blueprints.autocomplete.app, url_prefix="/autocomplete")
+app.register_blueprint(blueprints.genres.app, url_prefix="/genres")
+
+# Initialize cross origin resource sharing
 CORS(app, origins="http://localhost")
+
+# Create a new Prometheus metrics export configuration
+PrometheusMetrics(app)
 
 
 @app.route("/get-search-results", methods=["POST"])
@@ -133,11 +139,12 @@ def calculate_users_skew():
         data = request.get_json()
         genres = data.get("genres")
         films = data.get("films")
-        users = data.get("users")
+        opinion = data.get("opinion")
 
-        if users and (films or genres):
-            skew_result = "higher"  # Replace with your actual skew calculation
-            return jsonify(skew_result)
+        if opinion and (films or genres):
+            better = ["Genre 1", "Genre 2", "Genre 3"]
+            worse = ["Genre 4", "Genre 5", "Genre 6"]
+            return jsonify({"better": better, "worse": worse})
         else:
             return (
                 jsonify(
@@ -155,17 +162,14 @@ def calculate_users_skew():
 def movie_prediction():
     try:
         data = request.get_json()
-        tags = data.get("tags", [])
+        movie = data.get("movie", "")
         users = data.get("users", [])
-        ratings = data.get("ratings", [0, 10])
-        if tags or users or ratings:
+        if users and movie:
             rating = 4.37
             return jsonify(rating)
         else:
             return (
-                jsonify(
-                    {"error": "Please provide at least one user and one film or genre."}
-                ),
+                jsonify({"error": "Please provide at least one user and a movie."}),
                 400,
             )
 
@@ -201,7 +205,3 @@ def calculate_personalities_skew():
     except Exception as e:
         print(f"Error: {str(e)}")
         return jsonify({"error": str(e)}), 500
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5555, debug=True)

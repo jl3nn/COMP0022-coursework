@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Paper, Stack, Typography } from '@mui/material';
+import { Paper, Radio, Stack, Typography, RadioGroup, FormControlLabel } from '@mui/material';
 import AutocompleteWithFetch from '../common/AutocompleteSelector';
 
 function UserReportPage() {
     const [genre, setGenres] = useState(null as string | null);
     const [film, setFilms] = useState(null as string | null);
-    const [user, setUsers] = useState(null as string | null);
-    const [skew, setSkew] = useState<String | null>(null);
+    const [opinion, setOpinion] = useState(null as number | null);
+    const [better, setBetter] = useState([] as string[]);
+    const [worse, setWorse] = useState([] as string[]);
 
     useEffect(() => {
         const calculateSkew = async () => {
@@ -16,7 +17,7 @@ function UserReportPage() {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ genres: genre, films: film, users: user }),
+                    body: JSON.stringify({ genres: genre, films: film, opinion: opinion }),
                 });
 
                 if (!response.ok) {
@@ -24,31 +25,43 @@ function UserReportPage() {
                 }
 
                 const skewData = await response.json();
-                setSkew(skewData);
+                setBetter(skewData.better);
+                setWorse(skewData.worse);
             } catch (error: any) {
                 console.error('Error calculating skew:', error.message);
             }
         };
 
-        if (user && (genre || film)) {
+        if (opinion && (genre || film)) {
             calculateSkew();
         } else {
-            setSkew(null);
+            setBetter([]);
+            setWorse([]);
         }
-    }, [user, genre, film]);
+    }, [opinion, genre, film]);
 
     return (
         <Stack spacing={2} alignItems="center" maxWidth={800} margin='auto'>
-            <AutocompleteWithFetch value={user} label="User" apiUrl="http://localhost:5555/autocomplete/user" onChange={(_: any, newValue: any) => setUsers(newValue)} />
+            <Typography variant="h6">For Users that typically</Typography>
+            <RadioGroup
+                aria-labelledby="demo-radio-buttons-group-label"
+                name="radio-buttons-group"
+                value={opinion}
+                onChange={(event) => setOpinion(parseInt(event.target.value))}
+            >
+                <FormControlLabel value="1" control={<Radio />} label="Like" />
+                <FormControlLabel value="-1" control={<Radio />} label="Dislike" />
+                <FormControlLabel value="0" control={<Radio />} label="Are Neutral On" />
+            </RadioGroup>
+            <Typography variant="h6">the following</Typography>
             <AutocompleteWithFetch value={genre} disabled={film != null} label="Genres" apiUrl="http://localhost:5555/autocomplete/genre" onChange={(_: any, newValue: any) => setGenres(newValue)} />
             <AutocompleteWithFetch value={film} disabled={genre != null} label="Films" apiUrl="http://localhost:5555/autocomplete/movie" onChange={(_: any, newValue: any) => setFilms(newValue)} />
 
             <Typography>
-                {skew ? (
-                    <>{user} rates {film}{genre} {skew} than other films.</>
-                ) : (
-                    <>Please select a user and some genres/films</>
-                )}
+                <Typography variant="h6">Those users like:</Typography>
+                {better.map((b) => <Typography variant="h6">{b}</Typography>)}
+                <Typography variant="h6">Those users dislike:</Typography>
+                {worse.map((b) => <Typography variant="h6">{b}</Typography>)}
             </Typography>
         </Stack>
     );
