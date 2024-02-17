@@ -8,6 +8,7 @@ import MovieCards from '../common/MovieCard';
 type Movie = {
     imageUrl: string;
     title: string;
+    year: string;
     rating: number;
     genre: string;
     tags: string[];
@@ -41,6 +42,7 @@ function MovieListPage() {
                     setData([{
                         imageUrl: '',
                         title: 'Server Is Broken',
+                        year: '2021',
                         rating: 1   ,
                         genre: 'Bar',
                         tags: ['bla'],
@@ -56,6 +58,7 @@ function MovieListPage() {
                 setData([{
                     imageUrl: '',
                     title: 'Server is down',
+                    year: '2021',
                     rating: 1,
                     genre: 'Bar',
                     tags: ['bla'],

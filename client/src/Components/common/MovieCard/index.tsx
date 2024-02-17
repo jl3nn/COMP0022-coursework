@@ -19,6 +19,7 @@ import {
 interface MovieCardProps {
     imageUrl: string;
     title: string;
+    year: string;
     rating: number;
     genre: string;
     tags: string[];
@@ -28,6 +29,7 @@ interface MovieCardProps {
 const MovieCard: React.FC<MovieCardProps> = ({
     imageUrl,
     title,
+    year,
     rating,
     genre,
     tags,
@@ -48,7 +50,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
     </Button>;
     const Image = <CardMedia component="img" alt={title} height="140" image={imageUrl} />;
     const Title = <Typography variant="h6" component="div">
-        {title}
+        {title} - {year}
     </Typography>;
     const Genre = <Typography variant="subtitle1" color="textSecondary">
         {genre}
@@ -149,6 +151,7 @@ function MovieCards({ data } : { data : any[]}) {
                 <MovieCard
                     imageUrl={movie.imageUrl}
                     title={movie.title}
+                    year={movie.year}
                     rating={movie.rating}
                     genre={movie.genre}
                     tags={movie.tags}

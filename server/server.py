@@ -27,6 +27,7 @@ def get_search_results():
             SELECT
                 m.image_url,
                 m.title,
+                m.year,
                 AVG(r.rating),
                 ARRAY_AGG(DISTINCT g.genre) AS genres,
                 ARRAY_AGG(DISTINCT t.tag) AS tags,
@@ -43,10 +44,13 @@ def get_search_results():
         if searchText:
             query += " AND LOWER(m.title) LIKE LOWER(%(title)s)"
         if genres:
-            query += " AND g.genre IN %(genres)s"
-        if tags:
-            query += " AND t.tag IN %(tags)s"
+            # Adjust to use ANY with an array for genres
+            query += " AND g.genre = ANY(%(genres)s)"
 
+        if tags:
+            query += " AND t.tag = ANY(%(tags)s)"
+
+        # Ensure the rest of your query uses named placeholders consistently
         query += """
             AND m.year BETWEEN %(yearstart)s AND %(yearend)s
             GROUP BY m.title, m.image_url
@@ -58,8 +62,8 @@ def get_search_results():
         # Prepare parameters
         params = {
             'title': f"%{searchText}%",
-            'genres': tuple(genres),
-            'tags': tuple(tags),
+            'genres': genres,
+            'tags': tags,
             'yearstart': date[0],
             'yearend': date[1],
             'ratingstart': ratings[0],
@@ -72,10 +76,11 @@ def get_search_results():
             {
                 "imageUrl": row[0],
                 "title": row[1],
-                "averageRating": row[2],
-                "genres": row[3],
-                "tags": row[4],
-                "ratingsList": row[5]
+                "year": row[2],
+                "averageRating": row[3],
+                "genres": row[4],
+                "tags": row[5],
+                "ratingsList": row[6]
             }
             for row in results
         ]
