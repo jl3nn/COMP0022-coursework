@@ -25,25 +25,31 @@ function UserReportPage() {
   useEffect(() => {
     const calculateSkew = async () => {
       try {
-        const response = await fetch("http://localhost:5555/user-skew", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            genres: genre,
-            films: film,
-            opinion: opinion,
-          }),
-        });
+        const response = await fetch(
+          "http://localhost:5555/genres/user-preferences",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              genre,
+              film,
+              opinion,
+            }),
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
 
-        const skewData = await response.json();
-        setBetter(skewData.better);
-        setWorse(skewData.worse);
+        const skewData = (await response.json()).map(
+          (d: { genre: string; avg_rating: number }) => d.genre
+        );
+
+        setBetter(skewData.slice(0, Math.ceil(skewData.length / 2)));
+        setWorse(skewData.slice(Math.ceil(skewData.length / 2)).reverse());
       } catch (error: any) {
         console.error("Error calculating skew:", error.message);
       }
@@ -73,9 +79,9 @@ function UserReportPage() {
             onChange={(event) => setOpinion(parseInt(event.target.value))}
           >
             <FormControlLabel value="1" control={<Radio />} label="Like" />
-            <FormControlLabel value="-1" control={<Radio />} label="Dislike" />
+            <FormControlLabel value="2" control={<Radio />} label="Dislike" />
             <FormControlLabel
-              value="0"
+              value="3"
               control={<Radio />}
               label="Are Neutral On"
             />

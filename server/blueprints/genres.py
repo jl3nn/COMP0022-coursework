@@ -27,12 +27,15 @@ def get_genres(agg_func: str, precision: int = 3) -> Response:
     )
 
 
-def get_genres_by_user_preference(min_rating: int = 0, max_rating: int = 5) -> Response:
-    genre = request.args.get("genre")
-    return get_response(f"""
-        WITH UserLikedGenres AS (
+def get_genres_by_user_preference(
+    min_rating: int = 0, max_rating: int = 5, precision: int = 3
+) -> Response:
+    genre = request.json.get("genre")
+    resp = get_response(
+        f"""
+        WITH RelevantUsers AS (
             SELECT
-                DISTINCT r.user_id,
+                DISTINCT r.user_id
             FROM
                 ratings r
             INNER JOIN
@@ -45,10 +48,11 @@ def get_genres_by_user_preference(min_rating: int = 0, max_rating: int = 5) -> R
                 r.user_id
             HAVING
                 AVG(r.rating) BETWEEN {min_rating} AND {max_rating}
-        ),
+        )
 
         SELECT
-            g.genre, AVG(r.rating) as AvgRating
+            g.genre,
+            ROUND(AVG(r.rating)::NUMERIC, {precision}) AS AvgRating
         FROM
             movies_genres mg
         INNER JOIN
@@ -57,11 +61,18 @@ def get_genres_by_user_preference(min_rating: int = 0, max_rating: int = 5) -> R
             ratings r ON mg.movie_id = r.movie_id
         INNER JOIN
             RelevantUsers ru ON r.user_id = ru.user_id
+        WHERE
+            g.genre != %(genre)s
         GROUP BY
             g.genre
         ORDER BY
             AvgRating DESC;
-        """, params={"genre": genre})
+        """,
+        params={"genre": genre},
+        func=lambda row: {"genre": row[0], "avg_rating": row[1]},
+    )
+
+    return resp
 
 
 @app.route("/popular", methods=["GET"])
@@ -74,16 +85,11 @@ def get_controversial_genres() -> Response:
     return get_genres("STDDEV")
 
 
-@app.route("/liked-genre", methods=["GET"])
-def get_user_liked_genres() -> Response:
-    return get_genres_by_user_preference(4, 5)
-
-
-@app.route("/disliked-genre", methods=["GET"])
-def get_user_disliked_genres() -> Response:
-    return get_genres_by_user_preference(0, 2)
-
-
-@app.route("/neutral-genre", methods=["GET"])
-def get_user_neutral_genres() -> Response:
+@app.route("/user-preferences", methods=["POST"])
+def get_user_preferences() -> Response:
+    opinion = request.json.get("opinion", 0)
+    if opinion == 1:
+        return get_genres_by_user_preference(4, 5)
+    if opinion == 2:
+        return get_genres_by_user_preference(0, 2)
     return get_genres_by_user_preference(2, 4)
