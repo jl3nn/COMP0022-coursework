@@ -53,6 +53,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     setRating([0, 10]);
     setTags([]);
     setGenres([]);
+    setDate([1902, 2018]);
   };
 
   const contextValue: SearchContextProps = {

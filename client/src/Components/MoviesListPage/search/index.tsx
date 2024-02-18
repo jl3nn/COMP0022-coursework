@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Paper, InputAdornment, Slider, IconButton, TextField, Stack, Button, Typography, Box } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterIcon from '@mui/icons-material/FilterList';
@@ -11,6 +11,7 @@ const SearchComponent = () => {
   const [data, setData] = useState([] as string[]);
   const [searchVal, setSearchVal] = useState('' as string);
   const [isFilterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const { setSearchFilter } = useSearch();
 
   const handleFilterIconClick = () => {
     setFilterDrawerOpen(true);
@@ -20,14 +21,22 @@ const SearchComponent = () => {
     setFilterDrawerOpen(false);
   };
 
+  const updateSearchText = (e: any) => {
+    setSearchFilter(e.target.value);
+  }
 
   async function onSearchChange(s: string) {
     setSearchVal(s);
     if (s === '') {
       setData([]);
+      setSearchFilter('');
       return;
+    } else {
+      let url = `http://localhost:5555/autocomplete/search?prefix=${s}`
+      fetch(url, { mode: 'cors' })
+        .then((response) => response.json())
+        .then((data) => {setData(data)});
     }
-    setData(['A', 'B', 'C']);
   }
 
   return (
@@ -47,6 +56,7 @@ const SearchComponent = () => {
         freeSolo
         options={data}
         inputValue={searchVal}
+        onSelect={updateSearchText}
         onInputChange={(e, newValue) => onSearchChange(newValue)}
         renderInput={(params) => (
           <TextField
@@ -78,10 +88,6 @@ const SearchComponent = () => {
 
 const SearchDrawer = ({ isFilterDrawerOpen, handleFilterDrawerClose }: any) => {
   const { ratings, tags, genres, date, setRatingFilter, setDateFilter, setTagsFilter, setGenresFilter, resetFilters } = useSearch();
-  const [tagOptions, setTagOptions] = useState([] as string[]);
-  const [genreOptions, setGenreOptions] = useState([] as string[]);
-  const [tagText, setTagText] = useState('');
-  const [genreText, setGenreText] = useState('');
 
   return (
     <Drawer anchor="right" open={isFilterDrawerOpen} onClose={handleFilterDrawerClose}>
@@ -101,7 +107,7 @@ const SearchDrawer = ({ isFilterDrawerOpen, handleFilterDrawerClose }: any) => {
             />
           </Box>
           <AutocompleteWithFetch value={genres} label="Genres" multiple apiUrl="http://localhost:5555/autocomplete/genre" onChange={(_: any, newValue: any) => setGenresFilter(newValue)} />
-          <AutocompleteWithFetch value={tags} label="Tags" multiple apiUrl="http://localhost:5555/autocomplete/tag" onChange={(_: any, newValue: any) => setTagOptions(newValue)} />
+          <AutocompleteWithFetch value={tags} label="Tags" multiple apiUrl="http://localhost:5555/autocomplete/tag" onChange={(_: any, newValue: any) => setTagsFilter(newValue)} />
           <Slider
               value={date}
               onChange={(_, val) => setDateFilter(val as [number, number])}

@@ -1,5 +1,6 @@
+import json
 from .common import get_response
-from flask import Blueprint, jsonify, request, Response
+from flask import Blueprint, jsonify, make_response, request, Response
 
 app = Blueprint("autocomplete", __name__)
 
@@ -67,3 +68,14 @@ def autocomplete_metric():
     except Exception as error:
         print(f"error: {str(error)}")
         return jsonify({"error": str(error)}), 500
+
+@app.route("/search", methods=["GET"])
+def autocomplete_search():
+    movies = autocomplete("title", "movies", 3)
+    actors = autocomplete("name", "actors", 3)
+    directors = autocomplete("name", "directors", 3)
+    movies_data = json.loads(movies.data.decode('utf-8'))
+    actors_data = json.loads(actors.data.decode('utf-8'))
+    directors_data = json.loads(directors.data.decode('utf-8'))
+    combined_data = movies_data + actors_data + directors_data
+    return make_response(jsonify(combined_data), 200)
