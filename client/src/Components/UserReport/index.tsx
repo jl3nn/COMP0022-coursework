@@ -14,54 +14,83 @@ import {
   Divider,
 } from "@mui/material";
 import AutocompleteWithFetch from "../common/AutocompleteSelector";
+import { Bar } from "react-chartjs-2";
+import "chart.js/auto";
 
 function UserReportPage() {
+  interface SkewData {
+    id: string;
+    avg_rating: number;
+  }
   const [genre, setGenres] = useState(null as string | null);
-  const [film, setFilms] = useState(null as string | null);
+  const [movie, setMovies] = useState(null as string | null);
   const [opinion, setOpinion] = useState(null as number | null);
-  const [better, setBetter] = useState([] as string[]);
-  const [worse, setWorse] = useState([] as string[]);
+  const [better, setBetter] = useState([] as SkewData[]);
+  const [worse, setWorse] = useState([] as SkewData[]);
 
   useEffect(() => {
     const calculateSkew = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:5555/genres/user-preferences",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              genre,
-              film,
-              opinion,
-            }),
-          }
-        );
+        const apiUrl = `http://localhost:5555/${
+          genre ? "genres" : "movies"
+        }/user-preferences`;
+
+        const response = await fetch(apiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            genre,
+            movie,
+            opinion,
+          }),
+        });
 
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
 
-        const skewData = (await response.json()).map(
-          (d: { genre: string; avg_rating: number }) => d.genre
-        );
+        const skewData = (await response.json()) as SkewData[];
 
-        setBetter(skewData.slice(0, Math.ceil(skewData.length / 2)));
-        setWorse(skewData.slice(Math.ceil(skewData.length / 2)).reverse());
+        console.log("Skew data:", skewData);
+        const skewDataLimit = Math.min(skewData.length, 5);
+        setBetter(skewData.slice(0, skewDataLimit));
+        setWorse(skewData.slice(-skewDataLimit).reverse());
       } catch (error: any) {
         console.error("Error calculating skew:", error.message);
       }
     };
 
-    if (opinion && (genre || film)) {
+    if (opinion && (genre || movie)) {
       calculateSkew();
     } else {
       setBetter([]);
       setWorse([]);
     }
-  }, [opinion, genre, film]);
+  }, [opinion, genre, movie]);
+
+  // Prepare data for the graph
+  const chartData = {
+    labels: better.map((b) => b.id).concat(worse.map((w) => w.id)),
+    datasets: [
+      {
+        label: "Average Rating",
+        data: better
+          .map((b) => b.avg_rating)
+          .concat(worse.map((w) => w.avg_rating)),
+        backgroundColor: [
+          ...better.map(() => "rgba(54, 162, 235, 0.5)"),
+          ...worse.map(() => "rgba(255, 99, 132, 0.5)"),
+        ],
+        borderColor: [
+          ...better.map(() => "rgba(54, 162, 235, 1)"),
+          ...worse.map(() => "rgba(255, 99, 132, 1)"),
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
 
   return (
     <Container maxWidth="md">
@@ -89,17 +118,17 @@ function UserReportPage() {
           <Typography variant="h6">the following</Typography>
           <AutocompleteWithFetch
             value={genre}
-            disabled={film != null}
+            disabled={movie != null}
             label="Genres"
             apiUrl="http://localhost:5555/autocomplete/genre"
             onChange={(_: any, newValue: any) => setGenres(newValue)}
           />
           <AutocompleteWithFetch
-            value={film}
+            value={movie}
             disabled={genre != null}
-            label="Films"
+            label="Movies"
             apiUrl="http://localhost:5555/autocomplete/movie"
-            onChange={(_: any, newValue: any) => setFilms(newValue)}
+            onChange={(_: any, newValue: any) => setMovies(newValue)}
           />
 
           <Box width="100%">
@@ -108,21 +137,48 @@ function UserReportPage() {
             </Typography>
             <List>
               <Typography variant="subtitle1">Those users like:</Typography>
-              {better.map((b, index) => (
-                <ListItem key={index}>
-                  <ListItemText primary={b} />
+              {better.length > 0 ? (
+                better.map((b, index) => (
+                  <ListItem key={index}>
+                    <ListItemText
+                      primary={b.id}
+                      secondary={`Rating: ${b.avg_rating}`}
+                    />
+                  </ListItem>
+                ))
+              ) : (
+                <ListItem>
+                  <ListItemText primary="No data available" />
                 </ListItem>
-              ))}
+              )}
               <Divider variant="middle" />
               <Typography variant="subtitle1">Those users dislike:</Typography>
-              {worse.map((w, index) => (
-                <ListItem key={index}>
-                  <ListItemText primary={w} />
+              {worse.length > 0 ? (
+                worse.map((w, index) => (
+                  <ListItem key={index}>
+                    <ListItemText
+                      primary={w.id}
+                      secondary={`Rating: ${w.avg_rating}`}
+                    />
+                  </ListItem>
+                ))
+              ) : (
+                <ListItem>
+                  <ListItemText primary="No data available" />
                 </ListItem>
-              ))}
+              )}
             </List>
           </Box>
         </Stack>
+        <Box width="100%" sx={{ mt: 4 }}>
+          <Typography variant="h6" gutterBottom>
+            Rating Distribution
+          </Typography>
+          <Bar
+            data={chartData}
+            options={{ scales: { y: { beginAtZero: true } } }}
+          />
+        </Box>
       </Paper>
     </Container>
   );

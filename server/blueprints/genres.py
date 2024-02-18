@@ -31,7 +31,7 @@ def get_genres_by_user_preference(
     min_rating: int = 0, max_rating: int = 5, precision: int = 3
 ) -> Response:
     genre = request.json.get("genre")
-    resp = get_response(
+    return get_response(
         f"""
         WITH RelevantUsers AS (
             SELECT
@@ -69,10 +69,8 @@ def get_genres_by_user_preference(
             AvgRating DESC;
         """,
         params={"genre": genre},
-        func=lambda row: {"genre": row[0], "avg_rating": row[1]},
+        func=lambda row: {"id": row[0], "avg_rating": row[1]},
     )
-
-    return resp
 
 
 @app.route("/popular", methods=["GET"])
