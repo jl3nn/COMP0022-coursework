@@ -1,38 +1,86 @@
-import React, { useEffect, useState } from 'react';
-import { Paper, Stack, Typography, Box } from '@mui/material';
+import React, { useEffect, useState } from "react";
+import { Container, Paper, Typography, Box, Stack } from "@mui/material";
+import { Bar } from "react-chartjs-2";
+import "chart.js/auto";
 
 function RankingsPage() {
-    const [popularGenres, setPopularGenres] = useState([] as string[])
-    const [controversialGenres, setControversialGenres] = useState([] as string[])
+  interface GenreData {
+    genre: string;
+    statistic: number;
+  }
 
-    useEffect(() => {
-        fetch(`http://localhost:5555/genres/popular`, { mode: 'cors' })
-            .then((response) => response.json())
-            .then((data) => setPopularGenres(data));
-    }, []);
+  const [popularGenres, setPopularGenres] = useState([] as GenreData[]);
+  const [controversialGenres, setControversialGenres] = useState(
+    [] as GenreData[]
+  );
 
-    useEffect(() => {
-        fetch(`http://localhost:5555/genres/controversial`, { mode: 'cors' })
-            .then((response) => response.json())
-            .then((data) => setControversialGenres(data));
-    }, []);
+  useEffect(() => {
+    fetch(`http://localhost:5555/genres/popular`, { mode: "cors" })
+      .then((response) => response.json())
+      .then((data) => setPopularGenres(data));
+  }, []);
 
-    return (
-        <Stack spacing={2} alignItems="center" margin={5}>
-            <Paper sx={{ width: 600 }}>
-                <Typography variant="h4">Most Popular Genres</Typography>
-                <Box sx={{ maxHeight: 'calc(50vh - 150px)', overflow: "auto", width: 600 }}>
-                    {popularGenres.map((m) => <Typography variant="h6">{m}</Typography>)}
-                </Box>
-            </Paper>
-            <Paper sx={{ maxHeight: 'calc(50vh - 100px)', overflow: "auto", width: 600 }}>
-                <Typography variant="h4">Most Controversial Genres</Typography>
-                <Box sx={{ maxHeight: 'calc(50vh - 150px)', overflow: "auto", width: 600 }}>
-                    {controversialGenres.map((m) => <Typography variant="h6">{m}</Typography>)}
-                </Box>
-            </Paper>
-        </Stack>
-    );
+  useEffect(() => {
+    fetch(`http://localhost:5555/genres/controversial`, { mode: "cors" })
+      .then((response) => response.json())
+      .then((data) => setControversialGenres(data));
+  }, []);
+
+  // Prepare chart data
+  const popularChartData = {
+    labels: popularGenres.map((g) => g.genre),
+    datasets: [
+      {
+        label: "Average Rating",
+        data: popularGenres.map((g) => g.statistic),
+        backgroundColor: "rgba(54, 162, 235, 0.5)",
+        borderColor: "rgba(54, 162, 235, 1)",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const controversialChartData = {
+    labels: controversialGenres.map((g) => g.genre),
+    datasets: [
+      {
+        label: "Standard Deviation",
+        data: controversialGenres.map((g) => g.statistic),
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+        borderColor: "rgba(255, 99, 132, 1)",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  return (
+    <Container maxWidth="md">
+      <Stack spacing={3} alignItems="center" margin={5}>
+        <Paper elevation={3} sx={{ p: 4, width: "100%" }}>
+          <Typography variant="h4" gutterBottom>
+            Most Popular Genres - Average Rating
+          </Typography>
+          <Box sx={{ maxHeight: "calc(50vh - 150px)", overflow: "auto" }}>
+            <Bar
+              data={popularChartData}
+              options={{ scales: { y: { beginAtZero: true } } }}
+            />
+          </Box>
+        </Paper>
+        <Paper elevation={3} sx={{ p: 4, width: "100%" }}>
+          <Typography variant="h4" gutterBottom>
+            Most Controversial Genres - Standard Deviation
+          </Typography>
+          <Box sx={{ maxHeight: "calc(50vh - 150px)", overflow: "auto" }}>
+            <Bar
+              data={controversialChartData}
+              options={{ scales: { y: { beginAtZero: true } } }}
+            />
+          </Box>
+        </Paper>
+      </Stack>
+    </Container>
+  );
 }
 
 export default RankingsPage;
