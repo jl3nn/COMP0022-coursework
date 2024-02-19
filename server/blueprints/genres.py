@@ -22,8 +22,8 @@ def get_genres(agg_func: str, precision: int = 3) -> Response:
             statistic DESC
         ;
         """,
-        # TODO: Modify client to include statistic
-        # func=lambda row: {"genre": row[0], "statistic": row[1]},
+        None,
+        func=lambda row: {"genre": row[0], "statistic": row[1]},
     )
 
 
