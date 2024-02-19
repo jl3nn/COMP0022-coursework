@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from "react";
-import {
-  Container,
-  Paper,
-  Typography,
-  Box,
-  Stack,
-  List,
-  ListItem,
-  ListItemText,
-} from "@mui/material";
+import { Container, Paper, Typography, Box, Stack } from "@mui/material";
+import { Bar } from "react-chartjs-2";
+import "chart.js/auto";
 
 function RankingsPage() {
   interface GenreData {
     genre: string;
     statistic: number;
   }
+
   const [popularGenres, setPopularGenres] = useState([] as GenreData[]);
   const [controversialGenres, setControversialGenres] = useState(
     [] as GenreData[]
@@ -32,41 +26,56 @@ function RankingsPage() {
       .then((data) => setControversialGenres(data));
   }, []);
 
+  // Prepare chart data
+  const popularChartData = {
+    labels: popularGenres.map((g) => g.genre),
+    datasets: [
+      {
+        label: "Average Rating",
+        data: popularGenres.map((g) => g.statistic),
+        backgroundColor: "rgba(54, 162, 235, 0.5)",
+        borderColor: "rgba(54, 162, 235, 1)",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const controversialChartData = {
+    labels: controversialGenres.map((g) => g.genre),
+    datasets: [
+      {
+        label: "Standard Deviation",
+        data: controversialGenres.map((g) => g.statistic),
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+        borderColor: "rgba(255, 99, 132, 1)",
+        borderWidth: 1,
+      },
+    ],
+  };
+
   return (
     <Container maxWidth="md">
       <Stack spacing={3} alignItems="center" margin={5}>
         <Paper elevation={3} sx={{ p: 4, width: "100%" }}>
           <Typography variant="h4" gutterBottom>
-            Most Popular Genres
+            Most Popular Genres - Average Rating
           </Typography>
           <Box sx={{ maxHeight: "calc(50vh - 150px)", overflow: "auto" }}>
-            <List>
-              {popularGenres.map((popGen, index) => (
-                <ListItem key={index}>
-                  <ListItemText
-                    primary={popGen.genre}
-                    secondary={`Average: ${popGen.statistic}`}
-                  />
-                </ListItem>
-              ))}
-            </List>
+            <Bar
+              data={popularChartData}
+              options={{ scales: { y: { beginAtZero: true } } }}
+            />
           </Box>
         </Paper>
         <Paper elevation={3} sx={{ p: 4, width: "100%" }}>
           <Typography variant="h4" gutterBottom>
-            Most Controversial Genres
+            Most Controversial Genres - Standard Deviation
           </Typography>
           <Box sx={{ maxHeight: "calc(50vh - 150px)", overflow: "auto" }}>
-            <List>
-              {controversialGenres.map((conGen, index) => (
-                <ListItem key={index}>
-                  <ListItemText
-                    primary={conGen.genre}
-                    secondary={`Standard Deviation: ${conGen.statistic}`}
-                  />
-                </ListItem>
-              ))}
-            </List>
+            <Bar
+              data={controversialChartData}
+              options={{ scales: { y: { beginAtZero: true } } }}
+            />
           </Box>
         </Paper>
       </Stack>
