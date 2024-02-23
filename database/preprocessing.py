@@ -23,10 +23,39 @@ def normalize_movies_with_links(movies_df, links_df, images_df):
 
 def process_movies_df(movies_df):
     """Extract year, clean title, and convert imdb_id format in movies_df."""
-    movies_df["year"] = movies_df["title"].str.extract(r"(\d{4})")[0].astype("Int64")
-    movies_df["title"] = movies_df["title"].str.replace(r" \(\d{4}\)", "", regex=True)
+    movies_df["year"] = movies_df["title"].str.extract(r"(\d{4})")[
+        0].astype("Int64")
+    movies_df["title"] = movies_df["title"].str.replace(
+        r" \(\d{4}\)", "", regex=True)
     movies_df.rename(columns={"imdbId": "imdb_id"}, inplace=True)
     movies_df["imdb_id"] = movies_df["imdb_id"].apply(lambda x: f"tt{x:07}")
+
+
+def process_and_normalise_tags(tags_df, movies_df, users_df):
+    """Extract tags, normalize the relation with movies and users."""
+
+    # Step 1: Normalize the Tags
+    normalized_tags_df = pd.DataFrame(tags_df['tag'].unique(), columns=['tag'])
+    normalized_tags_df['tagId'] = normalized_tags_df.index + 1
+
+    # Step 3: Join the Original Tags DataFrame with Movies and Users
+    # This step is to ensure we have the right 'movieId' and 'userId' for each tag.
+    tags_with_ids_df = tags_df.merge(
+        movies_df, left_on='movieId', right_on='movieId', how='left')
+    tags_with_ids_df = tags_with_ids_df.merge(
+        users_df, left_on='userId', right_on='userId', how='left')
+
+    # Step 4: Map Tags to Tag IDs
+    # Replacing the text tags in tags_df with their corresponding 'tagId' from the normalized tags DataFrame.
+    tags_with_ids_df = tags_with_ids_df.merge(
+        normalized_tags_df, on='tag', how='left')
+
+    # Step 5: Create the movies_users_tags_df
+    # This DataFrame should contain 'movieId', 'userId', 'tagId', and 'timestamp'.
+    movies_users_tags_df = tags_with_ids_df[[
+        'movieId', 'userId', 'tagId', 'timestamp']]
+
+    return normalized_tags_df, movies_users_tags_df
 
 
 def create_genre_tables(movies_df):
@@ -106,7 +135,8 @@ def main():
 
     # Load data
     images_df = load_csv(base_dirs["additional"], "images.csv")
-    links_df = load_csv(base_dirs["movielens"], "links.csv", dtype={"tmdbId": "str"})
+    links_df = load_csv(base_dirs["movielens"],
+                        "links.csv", dtype={"tmdbId": "str"})
     movies_df = load_csv(base_dirs["movielens"], "movies.csv")
     ratings_df = load_csv(base_dirs["movielens"], "ratings.csv")
     tags_df = load_csv(base_dirs["movielens"], "tags.csv")
@@ -124,11 +154,14 @@ def main():
         .drop_duplicates()
         .to_frame()
     )
+    tags_df, movies_users_tags_df = process_and_normalise_tags(
+        tags_df, movies_df, users_df)
     imdb_df = process_imdb_df(imdb_df, movies_df)
     actors_df, directors_df = process_actor_director_data(imdb_df)
 
     # Explode and map actor and director IDs
-    movie_actors_df = explode_and_map_ids(imdb_df, actors_df, "actor_id", "actor_ids")
+    movie_actors_df = explode_and_map_ids(
+        imdb_df, actors_df, "actor_id", "actor_ids")
     movie_directors_df = explode_and_map_ids(
         imdb_df, directors_df, "director_id", "director_ids"
     )
@@ -139,6 +172,7 @@ def main():
         movies=movies_df,
         ratings=ratings_df,
         tags=tags_df,
+        movies_users_tags=movies_users_tags_df,
         users=users_df,
         genres=genres_df,
         movies_genres=movie_genres_df,

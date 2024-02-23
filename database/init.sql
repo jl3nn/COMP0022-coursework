@@ -23,15 +23,32 @@ CREATE TABLE ratings (
     FOREIGN KEY(movie_id) REFERENCES movies(movie_id)
 );
 
+-- CREATE TABLE tags (
+--     tag_id SERIAL,
+--     user_id INT NOT NULL,
+--     movie_id INT NOT NULL,
+--     tag VARCHAR(255) NOT NULL,
+--     timestamp TIMESTAMP NOT NULL,
+--     PRIMARY KEY(tag_id),
+--     FOREIGN KEY(user_id) REFERENCES users(user_id),
+--     FOREIGN KEY(movie_id) REFERENCES movies(movie_id)
+-- );
+
 CREATE TABLE tags (
-    tag_id SERIAL,
-    user_id INT NOT NULL,
-    movie_id INT NOT NULL,
-    tag VARCHAR(255) NOT NULL,
+    tag_id INT,
+    tag VARCHAR(255) NOT NULL UNIQUE,
+    PRIMARY KEY(tag_id)
+);
+
+CREATE TABLE movies_users_tags(
+    movie_id INT,
+    user_id INT, 
+    tag_id INT,
     timestamp TIMESTAMP NOT NULL,
-    PRIMARY KEY(tag_id),
+    PRIMARY KEY(movie_id, user_id, tag_id), 
+    FOREIGN KEY(movie_id) REFERENCES movies(movie_id),
     FOREIGN KEY(user_id) REFERENCES users(user_id),
-    FOREIGN KEY(movie_id) REFERENCES movies(movie_id)
+    FOREIGN KEY(tag_id) REFERENCES tags(tag_id)
 );
 
 CREATE TABLE genres (
@@ -79,7 +96,8 @@ CREATE TABLE movies_directors (
 COPY movies (movie_id, title, imdb_id, tmdb_id, image_url, year) FROM '/docker-entrypoint-initdb.d/movies.csv' DELIMITER ',' CSV HEADER;
 COPY users (user_id) FROM '/docker-entrypoint-initdb.d/users.csv' DELIMITER ',' CSV HEADER;
 COPY ratings (user_id, movie_id, rating, timestamp) FROM '/docker-entrypoint-initdb.d/ratings.csv' DELIMITER ',' CSV HEADER;
-COPY tags (user_id, movie_id, tag, timestamp) FROM '/docker-entrypoint-initdb.d/tags.csv' DELIMITER ',' CSV HEADER;
+COPY tags (tag, tag_id) FROM '/docker-entrypoint-initdb.d/tags.csv' DELIMITER ',' CSV HEADER;
+COPY movies_users_tags (movie_id, user_id, tag_id, timestamp) FROM '/docker-entrypoint-initdb.d/movies_users_tags.csv' DELIMITER ',' CSV HEADER;
 COPY genres (genre, genre_id) FROM '/docker-entrypoint-initdb.d/genres.csv' DELIMITER ',' CSV HEADER;
 COPY movies_genres (movie_id, genre_id) FROM '/docker-entrypoint-initdb.d/movies_genres.csv' DELIMITER ',' CSV HEADER;
 COPY actors(actor_id, name) FROM '/docker-entrypoint-initdb.d/actors.csv' DELIMITER ',' CSV HEADER;
