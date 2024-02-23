@@ -34,24 +34,17 @@ def process_movies_df(movies_df):
 def process_and_normalise_tags(tags_df, movies_df, users_df):
     """Extract tags, normalize the relation with movies and users."""
 
-    # Step 1: Normalize the Tags
     normalized_tags_df = pd.DataFrame(tags_df['tag'].unique(), columns=['tag'])
     normalized_tags_df['tagId'] = normalized_tags_df.index + 1
 
-    # Step 3: Join the Original Tags DataFrame with Movies and Users
-    # This step is to ensure we have the right 'movieId' and 'userId' for each tag.
     tags_with_ids_df = tags_df.merge(
         movies_df, left_on='movieId', right_on='movieId', how='left')
     tags_with_ids_df = tags_with_ids_df.merge(
         users_df, left_on='userId', right_on='userId', how='left')
 
-    # Step 4: Map Tags to Tag IDs
-    # Replacing the text tags in tags_df with their corresponding 'tagId' from the normalized tags DataFrame.
     tags_with_ids_df = tags_with_ids_df.merge(
         normalized_tags_df, on='tag', how='left')
 
-    # Step 5: Create the movies_users_tags_df
-    # This DataFrame should contain 'movieId', 'userId', 'tagId', and 'timestamp'.
     movies_users_tags_df = tags_with_ids_df[[
         'movieId', 'userId', 'tagId', 'timestamp']]
 

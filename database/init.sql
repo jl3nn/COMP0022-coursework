@@ -23,17 +23,6 @@ CREATE TABLE ratings (
     FOREIGN KEY(movie_id) REFERENCES movies(movie_id)
 );
 
--- CREATE TABLE tags (
---     tag_id SERIAL,
---     user_id INT NOT NULL,
---     movie_id INT NOT NULL,
---     tag VARCHAR(255) NOT NULL,
---     timestamp TIMESTAMP NOT NULL,
---     PRIMARY KEY(tag_id),
---     FOREIGN KEY(user_id) REFERENCES users(user_id),
---     FOREIGN KEY(movie_id) REFERENCES movies(movie_id)
--- );
-
 CREATE TABLE tags (
     tag_id INT,
     tag VARCHAR(255) NOT NULL UNIQUE,
