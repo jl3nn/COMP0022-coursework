@@ -28,7 +28,7 @@ def get_movie_details():
                 m.image_url,
                 m.title,
                 m.year,
-                round(avg(r.rating), 1),
+                round(cast(avg(r.rating) as numeric), 1),
                 array_agg(distinct g.genre) as genres,
                 array_agg(distinct t.tag) as tags,
                 array_agg(r.rating) filter (WHERE r.rating IS NOT NULL) as ratings,
@@ -37,7 +37,8 @@ def get_movie_details():
             from movies m
             left join movies_genres mg ON m.movie_id = mg.movie_id
             left join genres g ON mg.genre_id = g.genre_id
-            left join tags t ON m.movie_id = t.movie_id
+            left join movies_users_tags mut on m.movie_id = mut.movie_id
+            left join tags t ON mut.tag_id = t.tag_id
             left join movies_actors ma on m.movie_id = ma.movie_id
             left join actors a on ma.actor_id = a.actor_id
             left join movies_directors md on m.movie_id = md.movie_id
@@ -84,7 +85,7 @@ def get_search_results():
                 m.image_url,
                 m.title,
                 m.year,
-                round(avg(r.rating), 1),
+                round(cast(avg(r.rating) as numeric), 1),
                 m.movie_id
             from movies m
             left join ratings r on m.movie_id = r.movie_id
@@ -104,7 +105,8 @@ def get_search_results():
 
         if tags:
             query += """
-            left join tags t on m.movie_id = t.movie_id"""
+            left join movies_users_tags mut on m.movie_id = mut.movie_id
+            left join tags t ON mut.tag_id = t.tag_id"""
 
         
         query += " where 1=1"
@@ -152,8 +154,8 @@ def get_search_results():
                 "movieId": row[4]
             })
 
-        result_data = {'all_loaded': len(results) < 15
-                       , 'results': results}
+        result_data = {'all_loaded': len(results.get_json()) < 15
+                       , 'results': results.get_json()}
         return jsonify(result_data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500

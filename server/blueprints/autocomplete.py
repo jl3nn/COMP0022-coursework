@@ -16,8 +16,6 @@ def autocomplete(field: str, table: str, limit: int = 5) -> Response:
             {field} LIKE %(prefix)s
         GROUP BY
             {field}
-        ORDER BY
-            COUNT(*)
         LIMIT
             {limit}
         ;
