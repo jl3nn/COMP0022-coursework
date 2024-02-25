@@ -60,7 +60,7 @@ function RankingsPage() {
           <Typography variant="h4" gutterBottom>
             Most Popular Genres - Average Rating
           </Typography>
-          <Box sx={{ maxHeight: "calc(50vh - 150px)", overflow: "auto" }}>
+          <Box sx={{ minHeight: "350px", overflow: "auto" }}>
             <Bar
               data={popularChartData}
               options={{ scales: { y: { beginAtZero: true } } }}
@@ -71,7 +71,7 @@ function RankingsPage() {
           <Typography variant="h4" gutterBottom>
             Most Controversial Genres - Standard Deviation
           </Typography>
-          <Box sx={{ maxHeight: "calc(50vh - 150px)", overflow: "auto" }}>
+          <Box sx={{ minHeight: "350px", overflow: "auto" }}>
             <Bar
               data={controversialChartData}
               options={{ scales: { y: { beginAtZero: true } } }}
