@@ -12,6 +12,10 @@ services:
     volumes:
       - db_init:/docker-entrypoint-initdb.d
       - db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=comp0022
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=top_secret_password
 
   server:
     build: ./server

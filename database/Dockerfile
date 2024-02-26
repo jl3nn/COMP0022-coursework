@@ -16,10 +16,6 @@ RUN python preprocessing.py
 # Stage 2: Build PostgreSQL image
 FROM postgres:latest
 
-ENV POSTGRES_DB comp0022
-ENV POSTGRES_USER admin
-ENV POSTGRES_PASSWORD top_secret_password
-
 WORKDIR /docker-entrypoint-initdb.d
 
 COPY init.sql .
