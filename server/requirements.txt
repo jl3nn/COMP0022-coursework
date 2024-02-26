@@ -3,3 +3,5 @@ flask-cors
 gunicorn
 psycopg
 prometheus-flask-exporter
+Flask-Caching
+redis 

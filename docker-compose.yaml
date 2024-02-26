@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 name: cowsay
 
@@ -62,7 +62,7 @@ services:
     image: nginx/nginx-prometheus-exporter:1.1.0
     ports:
       - "9113:9113"
-    command: [ "--nginx.scrape-uri=http://client/metrics" ]
+    command: ["--nginx.scrape-uri=http://client/metrics"]
     networks:
       - frontend
 
@@ -72,6 +72,13 @@ services:
       - DATA_SOURCE_NAME=postgresql://admin:top_secret_password@database:5432/comp0022?sslmode=disable
     ports:
       - "9187:9187"
+    networks:
+      - backend
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
     networks:
       - backend
 

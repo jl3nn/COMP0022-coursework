@@ -1,6 +1,8 @@
-from flask import jsonify, make_response, Response
+from flask import jsonify, make_response, Response, request
 import psycopg
 from typing import Any, Callable, Optional
+from flask_caching import Cache
+
 
 CONN_INFO = {
     "dbname": "comp0022",
@@ -10,7 +12,20 @@ CONN_INFO = {
     "port": "5432",
 }
 
+CACHE_SETTINGS = {
+    "CACHE_TYPE": "RedisCache",
+    "CACHE_REDIS_HOST": "redis",
+    "CACHE_REDIS_PORT": 6379,
+    "CACHE_REDIS_DB": 0,
+    "CACHE_REDIS_URL": "redis://redis:6379/0",
+    "CACHE_DEFAULT_TIMEOUT": 500,
+}
 
+# register cache
+cache = Cache(config=CACHE_SETTINGS)
+
+
+@cache.memoize()
 def execute_query(query: str, params: Optional[dict]) -> list[tuple]:
     with psycopg.connect(**CONN_INFO) as conn:
         with conn.cursor() as cursor:
