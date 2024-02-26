@@ -40,7 +40,7 @@ def get_movies_by_user_preference(
             avg_rating DESC
         ;
         """,
-        params={"movie": request.json.get("movie")},
+        params={"movie": request.json.get("movie", "")},
         func=lambda row: {"id": row[0], "avg_rating": row[1]},
     )
 
@@ -105,13 +105,12 @@ def get_by_id() -> Response:
 
 @app.route("/get-search-results", methods=["POST"])
 def get_search_results() -> Response:
-    data = request.get_json()
-    search_text = data.get("searchText", "")
-    ratings = data.get("ratings", [0, 10])
-    tags = data.get("tags", [])
-    genres = data.get("genres", [])
-    date = data.get("date", [])
-    num_loaded = data.get("numLoaded", 0)
+    search_text = request.json.get("searchText", "")
+    ratings = request.json.get("ratings", [0, 10])
+    tags = request.json.get("tags", [])
+    genres = request.json.get("genres", [])
+    date = request.json.get("date", [])
+    num_loaded = request.json.get("numLoaded", 0)
 
     query = """
         SELECT
