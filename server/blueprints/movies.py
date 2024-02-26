@@ -48,7 +48,7 @@ def get_movies_by_user_preference(
 @app.route("/get-by-id", methods=["GET"])
 def get_by_id() -> Response:
     return get_response(
-        f"""
+        """
         SELECT
             m.image_url,
             m.title,
