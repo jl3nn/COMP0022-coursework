@@ -11,8 +11,8 @@ import {
     Button,
     Box,
     Divider,
-    List, 
-    ListItem, 
+    List,
+    ListItem,
     ListItemText
 } from '@mui/material';
 
@@ -48,8 +48,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
 
     const handleModalOpen = () => {
         setModalOpen(true);
-        //  fetch movie data from get-movie endpoint with movieId
-        fetch(`http://localhost:5555/get-movie?movieId=${movieId}`, {
+        fetch(`http://localhost:5555/movies/get-by-id?movieId=${movieId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -148,38 +147,38 @@ const MovieCard: React.FC<MovieCardProps> = ({
         </Box>
     </Modal>;
 
-  return (
-    <Card sx={{ maxWidth: 600, maxHeight: '100%', display: 'flex' }}>
-    <Stack direction="row" sx={{ width: '100%' }}>
-        {/* Image */}
-        <CardMedia
-        component="img"
-        alt={title}
-        width="200"
-        height="200"
-        image={imageUrl}
-        sx={{ objectFit: 'cover', flex: '1' }}
-        />
+    return (
+        <Card sx={{ maxWidth: 600, maxHeight: '100%', display: 'flex' }}>
+            <Stack direction="row" sx={{ width: '100%' }}>
+                {/* Image */}
+                <CardMedia
+                    component="img"
+                    alt={title}
+                    width="200"
+                    height="200"
+                    image={imageUrl}
+                    sx={{ objectFit: 'cover', flex: '1' }}
+                />
 
-        <CardContent sx={{ flex: '2' }}>
-        <Stack direction="column" spacing={1}>
-            <Stack direction="row" justifyContent="space-between">
-            <Stack direction="column">
-                {Title}
+                <CardContent sx={{ flex: '2' }}>
+                    <Stack direction="column" spacing={1}>
+                        <Stack direction="row" justifyContent="space-between">
+                            <Stack direction="column">
+                                {Title}
+                            </Stack>
+                            {Rating}
+                        </Stack>
+                        {OpenModalButton}
+                    </Stack>
+                </CardContent>
             </Stack>
-            {Rating}
-            </Stack>
-            {OpenModalButton}
-        </Stack>
-        </CardContent>
-    </Stack>
 
-    {MovieModal}
-    </Card>
+            {MovieModal}
+        </Card>
     );
 };
 
-function MovieCards({ data } : { data : any[]}) {
+function MovieCards({ data }: { data: any[] }) {
     return (
         <Stack spacing={2}>
             {data.map((movie) => (

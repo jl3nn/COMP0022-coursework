@@ -1,4 +1,5 @@
 from flask import jsonify, make_response, Response
+import json
 import psycopg
 from typing import Any, Callable, Optional
 
@@ -32,3 +33,30 @@ def get_response(
     except Exception as error:
         print(f"error: {str(error)}")
         return make_response(jsonify({"error": str(error)}), 500)
+
+
+def is_error(results: Any) -> bool:
+    return isinstance(results, dict) and "error" in results
+
+
+def transform_response(response: Response, func: Callable[[Any], Any]) -> Response:
+    results = json.loads(response.data.decode("utf-8"))
+
+    if is_error(results):
+        return response
+    else:
+        return make_response(jsonify(func(results)), 200)
+
+
+def concat_responses(responses: list[Response]) -> Response:
+    rows = []
+
+    for response in responses:
+        results = json.loads(response.data.decode("utf-8"))
+
+        if is_error(results):
+            return response
+        else:
+            rows.extend(results)
+
+    return make_response(jsonify(rows), 200)
