@@ -37,6 +37,7 @@ def get_movies_by_user_preference(
         GROUP BY
             m.title
         ORDER BY
+            COUNT(r.rating) DESC,
             avg_rating DESC
         ;
         """,

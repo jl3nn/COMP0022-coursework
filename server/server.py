@@ -43,26 +43,6 @@ def calculate_users_skew():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/movie-pred", methods=["POST"])
-def movie_prediction():
-    try:
-        data = request.get_json()
-        movie = data.get("movie", "")
-        users = data.get("users", [])
-        if users and movie:
-            rating = 4.37
-            return jsonify(rating)
-        else:
-            return (
-                jsonify({"error": "Please provide at least one user and a movie."}),
-                400,
-            )
-
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        return jsonify({"error": str(e)}), 500
-
-
 @app.route("/personality-skew", methods=["POST"])
 def calculate_personalities_skew():
     try:

@@ -10,7 +10,7 @@ function NewFilmPage() {
   useEffect(() => {
     const calculateRating = async () => {
       try {
-        const response = await fetch('http://localhost:5555/movie-pred', {
+        const response = await fetch('http://localhost:5555/ratings/prediction', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -38,16 +38,16 @@ function NewFilmPage() {
 
   return (
     <Stack spacing={2} alignItems="center" maxWidth={800} margin='auto'>
-      <AutocompleteWithFetch label="User" 
+      <AutocompleteWithFetch label="User"
         apiUrl={`http://localhost:5555/autocomplete/user`}
-        suffix={`movie=${encodeURIComponent(movie as string || "")}`} 
+        suffix={`movie=${encodeURIComponent(movie as string || "")}`}
         onChange={(_: any, newValue: any) => setUsers(newValue)} value={users} multiple disabled={!movie} />
 
       <AutocompleteWithFetch
         value={movie}
         label="Movie"
         apiUrl="http://localhost:5555/autocomplete/movie"
-        onChange={(_: any, newValue: any) => {if (newValue == '' || newValue == null) setUsers([]); setMovie(newValue);}}
+        onChange={(_: any, newValue: any) => { if (newValue == '' || newValue == null) setUsers([]); setMovie(newValue); }}
       />
 
       <Typography>
