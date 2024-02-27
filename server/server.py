@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from prometheus_flask_exporter import PrometheusMetrics
 
-from blueprints.common import cache, execute_query
+from blueprints.common import cache, execute_query, get_response
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -33,7 +33,7 @@ def get_movie_details():
                 m.image_url,
                 m.title,
                 m.year,
-                avg(r.rating),
+                round(cast(avg(r.rating) as numeric), 1),
                 array_agg(distinct g.genre) as genres,
                 array_agg(distinct t.tag) as tags,
                 array_agg(r.rating) filter (WHERE r.rating IS NOT NULL) as ratings,
@@ -42,7 +42,8 @@ def get_movie_details():
             from movies m
             left join movies_genres mg ON m.movie_id = mg.movie_id
             left join genres g ON mg.genre_id = g.genre_id
-            left join tags t ON m.movie_id = t.movie_id
+            left join movies_users_tags mut on m.movie_id = mut.movie_id
+            left join tags t ON mut.tag_id = t.tag_id
             left join movies_actors ma on m.movie_id = ma.movie_id
             left join actors a on ma.actor_id = a.actor_id
             left join movies_directors md on m.movie_id = md.movie_id
@@ -90,7 +91,7 @@ def get_search_results():
                 m.image_url,
                 m.title,
                 m.year,
-                avg(r.rating),
+                round(cast(avg(r.rating) as numeric), 1),
                 m.movie_id
             from movies m
             left join ratings r on m.movie_id = r.movie_id
@@ -112,6 +113,7 @@ def get_search_results():
             query += """
             left join tags t on m.movie_id = t.movie_id"""
 
+        
         query += " where 1=1"
 
         if searchText:
@@ -132,7 +134,7 @@ def get_search_results():
         if ratings[0] != 0 or ratings[1] != 5:
             query += """having avg(r.rating) between %(ratingstart)s and %(ratingend)s"""
         query += """
-            order by avg(r.rating) desc
+            order by count(r.rating), avg(r.rating) desc
             offset %(num_loaded)s
             limit 15
         """
@@ -149,18 +151,16 @@ def get_search_results():
             'num_loaded': num_loaded
         }
 
-        results = execute_query(query, params)
-
-        result_data = {'all_loaded': len(results) < 15, 'results': [
-            {
+        results = get_response(query, params, lambda row: {
                 "imageUrl": row[0],
                 "title": row[1],
                 "year": row[2],
                 "rating": row[3],
                 "movieId": row[4]
-            }
-            for row in results
-        ]}
+            })
+
+        result_data = {'all_loaded': len(results.get_json()) < 15
+                       , 'results': results.get_json()}
         return jsonify(result_data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500

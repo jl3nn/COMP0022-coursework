@@ -13,7 +13,9 @@ def autocomplete(field: str, table: str, limit: int = 5) -> Response:
         FROM
             {table}
         WHERE
-            LOWER({field}) LIKE %(prefix)s
+            {field} LIKE %(prefix)s
+        GROUP BY
+            {field}
         LIMIT
             {limit}
         ;
