@@ -19,8 +19,8 @@ CREATE TABLE ratings (
     rating FLOAT NOT NULL,
     timestamp TIMESTAMP NOT NULL,
     PRIMARY KEY(user_id, movie_id),
-    FOREIGN KEY(user_id) REFERENCES users(user_id),
-    FOREIGN KEY(movie_id) REFERENCES movies(movie_id)
+    FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY(movie_id) REFERENCES movies(movie_id) ON DELETE CASCADE
 );
 
 CREATE TABLE tags (
@@ -35,9 +35,9 @@ CREATE TABLE movies_users_tags(
     tag_id INT,
     timestamp TIMESTAMP NOT NULL,
     PRIMARY KEY(movie_id, user_id, tag_id), 
-    FOREIGN KEY(movie_id) REFERENCES movies(movie_id),
-    FOREIGN KEY(user_id) REFERENCES users(user_id),
-    FOREIGN KEY(tag_id) REFERENCES tags(tag_id)
+    FOREIGN KEY(movie_id) REFERENCES movies(movie_id) ON DELETE CASCADE,
+    FOREIGN KEY(user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY(tag_id) REFERENCES tags(tag_id) ON DELETE CASCADE
 );
 
 CREATE TABLE genres (
@@ -50,8 +50,8 @@ CREATE TABLE movies_genres (
     movie_id INT NOT NULL,
     genre_id INT NOT NULL,
     PRIMARY KEY(movie_id, genre_id),
-    FOREIGN KEY(movie_id) REFERENCES movies(movie_id),
-    FOREIGN KEY(genre_id) REFERENCES genres(genre_id)
+    FOREIGN KEY(movie_id) REFERENCES movies(movie_id) ON DELETE CASCADE,
+    FOREIGN KEY(genre_id) REFERENCES genres(genre_id) ON DELETE CASCADE
 );
 
 CREATE TABLE actors (
@@ -63,8 +63,8 @@ CREATE TABLE movies_actors (
     movie_id INT NOT NULL,
     actor_id INT NOT NULL,
     PRIMARY KEY(movie_id, actor_id),
-    FOREIGN KEY(movie_id) REFERENCES movies(movie_id),
-    FOREIGN KEY(actor_id) REFERENCES actors(actor_id)
+    FOREIGN KEY(movie_id) REFERENCES movies(movie_id) ON DELETE CASCADE,
+    FOREIGN KEY(actor_id) REFERENCES actors(actor_id) ON DELETE CASCADE
 );
 
 CREATE TABLE directors (
@@ -77,8 +77,8 @@ CREATE TABLE movies_directors (
     movie_id INT NOT NULL,
     director_id INT NOT NULL,
     PRIMARY KEY(movie_id, director_id),
-    FOREIGN KEY(movie_id) REFERENCES movies(movie_id),
-    FOREIGN KEY(director_id) REFERENCES directors(director_id)
+    FOREIGN KEY(movie_id) REFERENCES movies(movie_id) ON DELETE CASCADE,
+    FOREIGN KEY(director_id) REFERENCES directors(director_id) ON DELETE CASCADE
 );
 
 
@@ -93,3 +93,8 @@ COPY actors(actor_id, name) FROM '/docker-entrypoint-initdb.d/actors.csv' DELIMI
 COPY directors(director_id, name) FROM '/docker-entrypoint-initdb.d/directors.csv' DELIMITER ',' CSV HEADER;
 COPY movies_actors (movie_id, actor_id) FROM '/docker-entrypoint-initdb.d/movies_actors.csv' DELIMITER ',' CSV HEADER;
 COPY movies_directors (movie_id, director_id) FROM '/docker-entrypoint-initdb.d/movies_directors.csv' DELIMITER ',' CSV HEADER;
+
+-- Data cleaning step:
+-- Removes movies with missing actors or director info
+
+DELETE FROM movies WHERE movie_id IN (SELECT movie_id FROM movies WHERE movie_id NOT IN (SELECT movie_id FROM movies_actors) OR movie_id NOT IN (SELECT movie_id FROM movies_directors));
