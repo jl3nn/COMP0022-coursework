@@ -56,28 +56,28 @@ def get_by_id() -> Response:
             ROUND(AVG(r.rating)::NUMERIC, 1),
             ARRAY_AGG(DISTINCT g.genre) AS genres,
             ARRAY_AGG(DISTINCT t.tag) AS tags,
-            ARRAY_AGG(r.rating) FILTER (WHERE r.rating IS NOT NULL) AS ratings,
+            ARRAY_AGG(r.rating) AS ratings,
             ARRAY_AGG(DISTINCT a.name) AS actors,
             ARRAY_AGG(DISTINCT d.name) AS directors
         FROM
             movies m
-        LEFT JOIN
+        INNER JOIN
             movies_genres mg ON m.movie_id = mg.movie_id
-        LEFT JOIN
+        INNER JOIN
             genres g ON mg.genre_id = g.genre_id
-        LEFT JOIN
+        INNER JOIN
             movies_users_tags mut ON m.movie_id = mut.movie_id
-        LEFT JOIN
+        INNER JOIN
             tags t ON mut.tag_id = t.tag_id
-        LEFT JOIN
+        INNER JOIN
             movies_actors ma ON m.movie_id = ma.movie_id
-        LEFT JOIN
+        INNER JOIN
             actors a ON ma.actor_id = a.actor_id
-        LEFT JOIN
+        INNER JOIN
             movies_directors md ON m.movie_id = md.movie_id
-        LEFT JOIN
+        INNER JOIN
             directors d ON md.director_id = d.director_id
-        LEFT JOIN
+        INNER JOIN
             ratings r ON m.movie_id = r.movie_id
         WHERE
             m.movie_id = %(movie_id)s
@@ -121,35 +121,35 @@ def get_search_results() -> Response:
             m.movie_id
         FROM
             movies m
-        LEFT JOIN
+        INNER JOIN
             ratings r ON m.movie_id = r.movie_id
     """
 
     if search_text:
         query += """
-            LEFT JOIN
+            INNER JOIN
                 movies_actors ma ON m.movie_id = ma.movie_id
-            LEFT JOIN
+            INNER JOIN
                 actors a ON ma.actor_id = a.actor_id
-            LEFT JOIN
+            INNER JOIN
                 movies_directors md ON m.movie_id = md.movie_id
-            LEFT JOIN
+            INNER JOIN
                 directors d ON md.director_id = d.director_id
         """
 
     if genres:
         query += """
-            LEFT JOIN
+            INNER JOIN
                 movies_genres mg ON m.movie_id = mg.movie_id
-            LEFT JOIN
+            INNER JOIN
                 genres g ON mg.genre_id = g.genre_id
         """
 
     if tags:
         query += """
-            LEFT JOIN
+            INNER JOIN
                 movies_users_tags mut ON m.movie_id = mut.movie_id
-            LEFT JOIN
+            INNER JOIN
                 tags t ON mut.tag_id = t.tag_id
         """
 
