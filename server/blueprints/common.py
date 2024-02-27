@@ -2,23 +2,22 @@ from flask import jsonify, make_response, Response, request
 import psycopg
 from typing import Any, Callable, Optional
 from flask_caching import Cache
-
+import os
 
 CONN_INFO = {
-    "dbname": "comp0022",
-    "user": "admin",
-    "password": "top_secret_password",
-    "host": "database",
-    "port": "5432",
+    "dbname": os.environ.get("DB_NAME"),
+    "user": os.environ.get("DB_USER"),
+    "password": os.environ.get("DB_PASSWORD"),
+    "host": os.environ.get("DB_HOST"),
+    "port": os.environ.get("DB_PORT")
 }
 
 CACHE_SETTINGS = {
     "CACHE_TYPE": "RedisCache",
-    "CACHE_REDIS_HOST": "redis",
-    "CACHE_REDIS_PORT": 6379,
-    "CACHE_REDIS_DB": 0,
-    "CACHE_REDIS_URL": "redis://redis:6379/0",
-    "CACHE_DEFAULT_TIMEOUT": 500,
+    "CACHE_REDIS_HOST": os.environ.get("CACHE_HOST"),
+    "CACHE_REDIS_PORT": os.environ.get("CACHE_PORT"),
+    "CACHE_REDIS_PASSWORD": os.environ.get("CACHE_PASSWORD"),
+    "CACHE_DEFAULT_TIMEOUT": os.environ.get("CACHE_TIMEOUT")
 }
 
 # register cache
