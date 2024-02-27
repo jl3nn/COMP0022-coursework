@@ -31,14 +31,15 @@ def get_movies_by_user_preference(
             ratings r
         INNER JOIN
             movies m ON r.movie_id = m.movie_id
+        INNER JOIN
+            relevant_users ru ON r.user_id = ru.user_id
         WHERE
-            r.user_id IN (SELECT user_id FROM relevant_users)
-            AND m.title != %(movie)s
+            m.title != %(movie)s
         GROUP BY
             m.title
         ORDER BY
-            COUNT(r.rating) DESC,
-            avg_rating DESC
+            avg_rating DESC,
+            COUNT(r.rating) DESC
         ;
         """,
         params={"movie": request.json.get("movie", "")},
