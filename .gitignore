@@ -28,3 +28,6 @@ __pycache__
 .venv
 
 kube
+
+# local env files
+.env
