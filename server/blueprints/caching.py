@@ -51,6 +51,8 @@ def test() -> Response:
             m.image_url,
             m.title,
             m.year
+        LIMIT
+            200
         ;
         """
     )
