@@ -62,23 +62,23 @@ def get_by_id() -> Response:
             ARRAY_AGG(DISTINCT d.name) AS directors
         FROM
             movies m
-        INNER JOIN
+        LEFT JOIN
             movies_genres mg ON m.movie_id = mg.movie_id
-        INNER JOIN
+        LEFT JOIN
             genres g ON mg.genre_id = g.genre_id
-        INNER JOIN
+        LEFT JOIN
             movies_users_tags mut ON m.movie_id = mut.movie_id
-        INNER JOIN
+        LEFT JOIN
             tags t ON mut.tag_id = t.tag_id
-        INNER JOIN
+        LEFT JOIN
             movies_actors ma ON m.movie_id = ma.movie_id
-        INNER JOIN
+        LEFT JOIN
             actors a ON ma.actor_id = a.actor_id
-        INNER JOIN
+        LEFT JOIN
             movies_directors md ON m.movie_id = md.movie_id
-        INNER JOIN
+        LEFT JOIN
             directors d ON md.director_id = d.director_id
-        INNER JOIN
+        LEFT JOIN
             ratings r ON m.movie_id = r.movie_id
         WHERE
             m.movie_id = %(movie_id)s
@@ -122,35 +122,35 @@ def get_search_results() -> Response:
             m.movie_id
         FROM
             movies m
-        INNER JOIN
+        LEFT JOIN
             ratings r ON m.movie_id = r.movie_id
     """
 
     if search_text:
         query += """
-            INNER JOIN
+            LEFT JOIN
                 movies_actors ma ON m.movie_id = ma.movie_id
-            INNER JOIN
+            LEFT JOIN
                 actors a ON ma.actor_id = a.actor_id
-            INNER JOIN
+            LEFT JOIN
                 movies_directors md ON m.movie_id = md.movie_id
-            INNER JOIN
+            LEFT JOIN
                 directors d ON md.director_id = d.director_id
         """
 
     if genres:
         query += """
-            INNER JOIN
+            LEFT JOIN
                 movies_genres mg ON m.movie_id = mg.movie_id
-            INNER JOIN
+            LEFT JOIN
                 genres g ON mg.genre_id = g.genre_id
         """
 
     if tags:
         query += """
-            INNER JOIN
+            LEFT JOIN
                 movies_users_tags mut ON m.movie_id = mut.movie_id
-            INNER JOIN
+            LEFT JOIN
                 tags t ON mut.tag_id = t.tag_id
         """
 

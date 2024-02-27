@@ -5,6 +5,14 @@ import psycopg
 from typing import Any, Callable, Optional
 import os
 
+CONN_INFO = {
+    "dbname": os.environ.get("DB_NAME"),
+    "user": os.environ.get("DB_USER"),
+    "password": os.environ.get("DB_PASSWORD"),
+    "host": os.environ.get("DB_HOST"),
+    "port": os.environ.get("DB_PORT"),
+}
+
 CACHE_SETTINGS = {
     "CACHE_TYPE": "RedisCache",
     "CACHE_REDIS_HOST": os.environ.get("CACHE_HOST"),
@@ -14,14 +22,6 @@ CACHE_SETTINGS = {
 }
 
 cache = Cache(config=CACHE_SETTINGS)
-
-CONN_INFO = {
-    "dbname": os.environ.get("DB_NAME"),
-    "user": os.environ.get("DB_USER"),
-    "password": os.environ.get("DB_PASSWORD"),
-    "host": os.environ.get("DB_HOST"),
-    "port": os.environ.get("DB_PORT"),
-}
 
 
 @cache.memoize()

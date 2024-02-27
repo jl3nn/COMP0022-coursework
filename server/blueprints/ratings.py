@@ -1,5 +1,5 @@
 from .common import get_response
-from flask import Blueprint, Response, request
+from flask import Blueprint, jsonify, Response, request
 
 app = Blueprint("ratings", __name__)
 

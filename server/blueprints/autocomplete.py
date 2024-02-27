@@ -1,5 +1,5 @@
 from .common import concat_responses, get_response
-from flask import Blueprint, jsonify, make_response, request, Response
+from flask import Blueprint, jsonify, request, Response
 
 app = Blueprint("autocomplete", __name__)
 
