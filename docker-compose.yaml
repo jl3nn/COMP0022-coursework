@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 name: cowsay
 
@@ -6,12 +6,18 @@ services:
   database:
     build: ./database
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:${DB_PORT}"
     networks:
       - backend
     volumes:
       - db_init:/docker-entrypoint-initdb.d
-      - db_data:/var/lib/postgresql/data
+      # Persists the data in the volume
+      # - db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_PORT=${DB_PORT}
 
   server:
     build: ./server
@@ -22,6 +28,16 @@ services:
       - backend
     depends_on:
       - database
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - CACHE_HOST=${CACHE_HOST}
+      - CACHE_PORT=${CACHE_PORT}
+      - CACHE_PASSWORD=${CACHE_PASSWORD}
+      - CACHE_TIMEOUT=${CACHE_TIMEOUT}
 
   client:
     build: ./client
@@ -49,7 +65,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
     volumes:
       - ./grafana/datasources:/etc/grafana/provisioning/datasources/
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards/
@@ -69,11 +85,20 @@ services:
   postgres-exporter:
     image: quay.io/prometheuscommunity/postgres-exporter
     environment:
-      - DATA_SOURCE_NAME=postgresql://admin:top_secret_password@database:5432/comp0022?sslmode=disable
+      - DATA_SOURCE_NAME=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable
     ports:
       - "9187:9187"
     networks:
       - backend
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+    command: >
+      --requirepass ${CACHE_PASSWORD}
 
 volumes:
   db_init:

@@ -1,5 +1,7 @@
 flask
+Flask-Caching
 flask-cors
 gunicorn
 psycopg
 prometheus-flask-exporter
+redis

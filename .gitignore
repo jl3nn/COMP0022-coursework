@@ -27,4 +27,8 @@ yarn-error.log*
 __pycache__
 .venv
 
+# kubernetes
 kube
+
+# local env files
+.env
