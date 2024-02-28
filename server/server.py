@@ -232,7 +232,6 @@ def calculate_personalities_skew():
             genre,
             pearson_coeff
         FROM TopGenres
-        WHERE row_number <= 5
         """
 
         params = {}
