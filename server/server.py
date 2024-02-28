@@ -1,3 +1,4 @@
+from collections import defaultdict
 import blueprints
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -195,9 +196,9 @@ def calculate_personalities_skew():
                 g.genre,
                 p.trait AS personality_type,
                 (
-                    (COUNT(*) * SUM(rating * p.value) - SUM(rating) * SUM(p.value))
+                    (COUNT(*) * SUM(r.rating * p.value) - SUM(r.rating) * SUM(p.value))
                     /
-                    (SQRT(COUNT(*) * SUM(rating * rating) - SUM(rating) * SUM(rating))
+                    (SQRT(COUNT(*) * SUM(r.rating * r.rating) - SUM(r.rating) * SUM(rating))
                     * SQRT(COUNT(*) * SUM(p.value * p.value) - SUM(p.value) * SUM(p.value)))
                 ) AS pearson_coeff
             FROM users u
@@ -217,24 +218,38 @@ def calculate_personalities_skew():
                 SELECT user_id, 'extraversion', extraversion FROM users
             ) p ON u.user_id = p.user_id
             GROUP BY g.genre, p.trait
+        ),
+        TopGenres AS (
+            SELECT
+                personality_type,
+                genre,
+                pearson_coeff,
+                ROW_NUMBER() OVER (PARTITION BY personality_type ORDER BY pearson_coeff DESC) AS row_number
+            FROM PearsonCoefficients
         )
-
-        SELECT * FROM (
-            (SELECT * FROM PearsonCoefficients ORDER BY pearson_coeff DESC LIMIT 5)
-            UNION ALL
-            (SELECT * FROM PearsonCoefficients ORDER BY pearson_coeff ASC LIMIT 5)
-        ) AS CombinedResults
-        ORDER BY pearson_coeff DESC;
+        SELECT
+            personality_type,
+            genre,
+            pearson_coeff
+        FROM TopGenres
+        WHERE row_number <= 5
         """
 
         params = {}
 
         results = execute_query(query, params, conn_name="personality")
-        positive_results = [{'genre': x[0], 'trait': x[1]} for x in results[:5]]
-        negative_results = [{'genre': x[0], 'trait': x[1]} for x in results[5:]]
-        response = jsonify({'positive_correlations' : positive_results,
-                            'negative_correlations': negative_results})
-        return response
+
+        personality_genres = defaultdict(list)
+        for personality_type, genre, pearson_coeff in results:
+            personality_genres[personality_type].append((genre, float(pearson_coeff)))
+
+        formatted_result = {}
+        for personality, genres in personality_genres.items():
+            sorted_genres = sorted(genres, key=lambda x: x[1], reverse=True)
+            genres_list, coeffs_list = zip(*sorted_genres)
+            formatted_result[personality] = {'x': list(genres_list), 'y': list(coeffs_list)}
+
+        return jsonify(formatted_result)
     except Exception as e:
         print(f"Error: {str(e)}")
         return jsonify({"error": str(e)}), 500

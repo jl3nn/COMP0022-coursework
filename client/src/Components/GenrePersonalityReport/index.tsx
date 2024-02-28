@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Slider, Stack, Typography } from '@mui/material';
 import AutocompleteWithFetch from '../common/AutocompleteSelector';
+import BarChartComponent from './BarChartComponent';
 
 interface Results {
-    genre: string,
-    trait: string
+    x: string[],
+    y: number[]
 }
 
 function GenrePersonalityPage() {
-    const [positives, setPositives] = useState<Results[]>([])
-    const [negatives, setNegatives] = useState<Results[]>([])
+    const [data, setData] = useState<Results | null>(null);
 
     useEffect(() => {
         const calculateSkew = async () => {
@@ -26,8 +26,7 @@ function GenrePersonalityPage() {
                 }
 
                 const data = await response.json();
-                setPositives(data.positive_correlations);
-                setNegatives(data.negative_correlations);
+                setData(data);
             } catch (error: any) {
                 console.error('Error calculating skew:', error.message);
             }
@@ -38,15 +37,8 @@ function GenrePersonalityPage() {
     return (
         <Stack spacing={2} alignItems="center" maxWidth={800} margin='auto'>
             <Typography>The following is calculated based off the pearson coefficient between the genre and personality type.</Typography>
-            {positives && negatives ? (
-                <Box>
-                    {positives.map((x) => {
-                        return <Typography>Users with high {x.trait} tend to rate {x.genre} highly.</Typography>
-                    })}
-                    {negatives.map((x) => {
-                        return <Typography>Users with high {x.trait} tend to rate {x.genre} poorly.</Typography>
-                    })}
-                </Box>
+            {data? (
+                <BarChartComponent data={data as any} />
             ) : (
                 <Typography>Calculating...</Typography>
             )}
