@@ -186,30 +186,55 @@ def movie_prediction():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/personality-skew", methods=["POST"])
+@app.route("/personality-skew", methods=["GET"])
 def calculate_personalities_skew():
     try:
-        data = request.get_json()
-        genre = data.get("genre")
-        metric = data.get("metric")
-        metric_degree = data.get("metric_degree")
-        openness = data.get("openness")
-        agreeableness = data.get("agreeableness")
-        emotional_stability = data.get("emotional_stability")
-        conscientiousness = data.get("conscientiousness")
-        extraversion = data.get("extraversion")
+        query = """
+        WITH PearsonCoefficients AS (
+            SELECT
+                g.genre,
+                p.trait AS personality_type,
+                (
+                    (COUNT(*) * SUM(rating * p.value) - SUM(rating) * SUM(p.value))
+                    /
+                    (SQRT(COUNT(*) * SUM(rating * rating) - SUM(rating) * SUM(rating))
+                    * SQRT(COUNT(*) * SUM(p.value * p.value) - SUM(p.value) * SUM(p.value)))
+                ) AS pearson_coeff
+            FROM users u
+            JOIN ratings r ON r.user_id = u.user_id
+            JOIN movies m ON r.movie_id = m.movie_id
+            JOIN movie_genre mg ON mg.movie_id = m.movie_id
+            JOIN genres g ON g.genre_id = mg.genre_id
+            JOIN (
+                SELECT user_id, 'openness' AS trait, openness AS value FROM users
+                UNION ALL
+                SELECT user_id, 'agreeableness', agreeableness FROM users
+                UNION ALL
+                SELECT user_id, 'emotional_stability', emotional_stability FROM users
+                UNION ALL
+                SELECT user_id, 'conscientiousness', conscientiousness FROM users
+                UNION ALL
+                SELECT user_id, 'extraversion', extraversion FROM users
+            ) p ON u.user_id = p.user_id
+            GROUP BY g.genre, p.trait
+        )
 
-        if genre:
-            skew_result = "higher"
-            return jsonify(skew_result)
-        else:
-            return (
-                jsonify(
-                    {"error": "Please provide at least one user and one film or genre."}
-                ),
-                400,
-            )
+        SELECT * FROM (
+            (SELECT * FROM PearsonCoefficients ORDER BY pearson_coeff DESC LIMIT 5)
+            UNION ALL
+            (SELECT * FROM PearsonCoefficients ORDER BY pearson_coeff ASC LIMIT 5)
+        ) AS CombinedResults
+        ORDER BY pearson_coeff DESC;
+        """
 
+        params = {}
+
+        results = execute_query(query, params, conn_name="personality")
+        positive_results = [{'genre': x[0], 'trait': x[1]} for x in results[:5]]
+        negative_results = [{'genre': x[0], 'trait': x[1]} for x in results[5:]]
+        response = jsonify({'positive_correlations' : positive_results,
+                            'negative_correlations': negative_results})
+        return response
     except Exception as e:
         print(f"Error: {str(e)}")
         return jsonify({"error": str(e)}), 500

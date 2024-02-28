@@ -1,10 +1,10 @@
 CREATE TABLE users (
     user_id VARCHAR(255),
-    openness VARCHAR(255), 
-    agreeableness VARCHAR(255), 
-    emotional_stability VARCHAR(255), 
-    conscientiousness VARCHAR(255), 
-    extraversion VARCHAR(255), 
+    openness NUMERIC, 
+    agreeableness NUMERIC, 
+    emotional_stability NUMERIC, 
+    conscientiousness NUMERIC, 
+    extraversion NUMERIC, 
     assigned_metric VARCHAR(255), 
     assigned_condition VARCHAR(255),
     PRIMARY KEY (user_id)
@@ -19,7 +19,7 @@ CREATE TABLE movies (
 CREATE TABLE ratings (
     user_id VARCHAR(255) NOT NULL,
     movie_id INT NOT NULL,
-    rating VARCHAR(255) NOT NULL,
+    rating NUMERIC NOT NULL,
     PRIMARY KEY (user_id, movie_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id), 
     FOREIGN KEY (movie_id) REFERENCES movies(movie_id)
