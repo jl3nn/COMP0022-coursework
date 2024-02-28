@@ -77,7 +77,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
     const Rating = <Stack direction='row' spacing={1} paddingLeft={5}><Typography margin='auto' variant="h6" component="div">
         {rating}
     </Typography><StarIcon /></Stack>;
-    const Tags = <Stack direction="row" spacing={1}>
+    const Tags = <Stack direction="row" spacing={1} sx={{ maxWidth: "100%", overflow: "auto" }}>
         {movie ? movie.tags.map((tag, index) => (
             <Chip key={index} label={tag} />
         )) : ''}
@@ -97,6 +97,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
                 p: 4,
                 borderRadius: 8,
                 marginY: 3,
+                overflow: "auto"
             }}
         >
             {Title}

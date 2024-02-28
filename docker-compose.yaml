@@ -24,7 +24,7 @@ services:
     ports:
       - "5555:5555"
     networks:
-      - frontend
+      - devops
       - backend
     depends_on:
       - database
@@ -58,7 +58,7 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
-      - backend
+      - devops
 
   grafana:
     image: grafana/grafana
@@ -72,15 +72,18 @@ services:
     depends_on:
       - prometheus
     networks:
-      - backend
+      - devops
 
   nginx-prometheus-exporter:
     image: nginx/nginx-prometheus-exporter:1.1.0
     ports:
       - "9113:9113"
     command: [ "--nginx.scrape-uri=http://client/metrics" ]
+    depends_on:
+      - client
     networks:
       - frontend
+      - devops
 
   postgres-exporter:
     image: quay.io/prometheuscommunity/postgres-exporter
@@ -88,8 +91,11 @@ services:
       - DATA_SOURCE_NAME=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable
     ports:
       - "9187:9187"
+    depends_on:
+      - database
     networks:
       - backend
+      - devops
 
   redis:
     image: redis
@@ -100,6 +106,25 @@ services:
     command: >
       --requirepass ${CACHE_PASSWORD}
 
+  redis-exporter:
+    image: oliver006/redis_exporter
+    environment:
+      REDIS_ADDR: "redis://:${CACHE_PASSWORD}@redis:6379"
+    ports:
+      - "9121:9121"
+    networks:
+      - backend
+      - devops
+    depends_on:
+      - redis
+
+  jumpbox:
+    image: ubuntu
+    networks:
+      - backend
+      - frontend
+      - devops
+
 volumes:
   db_init:
   db_data:
@@ -107,3 +132,4 @@ volumes:
 networks:
   frontend:
   backend:
+  devops:
