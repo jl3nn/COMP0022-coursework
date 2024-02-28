@@ -6,11 +6,20 @@ from typing import Any, Callable, Optional
 import os
 
 CONN_INFO = {
-    "dbname": os.environ.get("DB_NAME"),
-    "user": os.environ.get("DB_USER"),
-    "password": os.environ.get("DB_PASSWORD"),
-    "host": os.environ.get("DB_HOST"),
-    "port": os.environ.get("DB_PORT"),
+    "default": {
+        "dbname": os.environ.get("DB_NAME"),
+        "user": os.environ.get("DB_USER"),
+        "password": os.environ.get("DB_PASSWORD"),
+        "host": os.environ.get("DB_HOST"),
+        "port": os.environ.get("DB_PORT"),
+    },
+    "personality": {
+        "dbname": os.environ.get("PERSONALITY_DB_NAME"),
+        "user": os.environ.get("PERSONALITY_DB_USER"),
+        "password": os.environ.get("PERSONALITY_DB_PASSWORD"),
+        "host": os.environ.get("PERSONALITY_DB_HOST"),
+        "port": os.environ.get("PERSONALITY_DB_PORT"),
+    },
 }
 
 CACHE_SETTINGS = {
@@ -25,8 +34,10 @@ cache = Cache(config=CACHE_SETTINGS)
 
 
 @cache.memoize()
-def execute_query(query: str, params: Optional[dict]) -> list[tuple]:
-    with psycopg.connect(**CONN_INFO) as conn:
+def execute_query(
+    query: str, params: Optional[dict], conn_name: Optional[str] = "default"
+) -> list[tuple]:
+    with psycopg.connect(**CONN_INFO[conn_name]) as conn:
         with conn.cursor() as cursor:
             cursor.execute(query, params)
             results = cursor.fetchall()
@@ -39,9 +50,10 @@ def get_response(
     query: str,
     params: Optional[dict] = None,
     func: Callable[[tuple], Any] = lambda row: row[0],
+    conn_name: Optional[str] = "default",
 ) -> Response:
     try:
-        results = execute_query(query, params)
+        results = execute_query(query, params, conn_name=conn_name)
         return make_response(jsonify(list(map(func, results))), 200)
     except Exception as error:
         print(f"error: {str(error)}")

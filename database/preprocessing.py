@@ -7,9 +7,9 @@ def ensure_directory_exists(directory):
     os.makedirs(directory, exist_ok=True)
 
 
-def load_csv(directory, filename, dtype=None):
+def load_csv(directory, filename, *args, **kwargs):
     """Load a CSV file from the specified directory."""
-    return pd.read_csv(f"{directory}{filename}", dtype=dtype)
+    return pd.read_csv(f"{directory}{filename}", *args, **kwargs)
 
 
 def normalize_movies_with_links(movies_df, links_df, images_df):
@@ -115,6 +115,34 @@ def explode_and_map_ids(imdb_df, mapping_df, id_column_name, new_column_name):
         subset=[new_column_name]
     )
 
+def prep_personality_data(data: pd.DataFrame, movies: pd.DataFrame, ratings: pd.DataFrame) -> tuple:
+    users = data[['userid', 'openness', 'agreeableness', 'emotional_stability', 'conscientiousness', 'extraversion', 'assigned_metric', 'assigned_condition']]
+    valid_movie_ids = movies['movieId'].unique()
+    valid_ratings = ratings.loc[ratings['movieId'].isin(valid_movie_ids)]
+    movies_df = movies.loc[movies['movieId'].isin(valid_ratings['movieId'].unique())]
+
+    ratings_df = valid_ratings.loc[valid_ratings['userId'].isin(users['userid'].unique())]
+    users_df = users.loc[users['userid'].isin(ratings_df['userId'].unique())]
+    users_df = users_df.rename(columns={'userid': 'user_id'})
+
+    genres = movies_df['genres'].str.split('|', expand=True).stack().reset_index(level=-1, drop=True)
+    genres_df = pd.DataFrame(genres.unique(), columns=['genre'])
+
+    genres_df['genre_id'] = range(1, len(genres_df) + 1)
+    genre_to_id = genres_df.set_index('genre')['genre_id'].to_dict()
+    genres = genres.map(genre_to_id)
+
+    genre_movie_df = pd.DataFrame({
+        'movie_id': genres.index.get_level_values(0),
+        'genre_id': genres.values
+    })
+    genre_movie_df.reset_index(drop=True, inplace=True)
+
+    movies_df = movies_df.drop('genres', axis=1).rename(columns={'movieId': 'movie_id'})
+    ratings_df = ratings_df.drop('timestamp', axis=1).rename(columns={'userId': 'user_id', 'movieId': 'movie_id'})
+
+    return users_df, movies_df, genres_df, genre_movie_df, ratings_df
+
 
 def main():
     base_dirs = {
@@ -159,7 +187,6 @@ def main():
         imdb_df, directors_df, "director_id", "director_ids"
     )
 
-    # Save processed data
     save_dataframes(
         base_dirs["processed"],
         movies=movies_df,
