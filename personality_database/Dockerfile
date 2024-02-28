@@ -3,8 +3,7 @@ FROM python:3.11 AS builder
 
 WORKDIR /app
 
-COPY additional ./additional
-COPY movielens ./movielens
+COPY personality ./personality
 COPY requirements.txt .
 COPY preprocessing.py .
 

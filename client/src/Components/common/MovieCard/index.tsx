@@ -79,7 +79,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
         {rating}
     </Typography><StarIcon /></Stack>;
     const Tags = <Stack direction="row" spacing={1} sx={{maxWidth: "100%", overflow: "auto"}}>
-        {movie ? movie.tags.map((tag, index) => (
+        {movie ? movie.tags.slice(0, 10).map((tag, index) => (
             <Chip key={index} label={tag} />
         )) : ''}
     </Stack>;
@@ -117,7 +117,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
                     <ListItemText primary={'Average Rating:' + rating} />
                 </ListItem>
                 <div style={{ overflowY: 'auto', maxHeight: '100px', paddingRight: '16px' }}>
-                    {movie ? movie.ratingsList.map((rating, index) => (
+                    {movie ? movie.ratingsList.slice(0, 10).map((rating, index) => (
                         <ListItem key={index} disablePadding>
                             <ListItemText primary={`Rating ${index + 1}: ${rating}`} />
                         </ListItem>
@@ -129,7 +129,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
                 <ListItem disablePadding>
                     <ListItemText primary={'Actors'} />
                 </ListItem>
-                {movie ? movie.actors.map((actor, index) => (
+                {movie ? movie.actors.slice(0, 10).map((actor, index) => (
                     <ListItem key={index} disablePadding>
                         <ListItemText primary={actor} />
                     </ListItem>
@@ -140,7 +140,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
                 <ListItem disablePadding>
                     <ListItemText primary={'Directors'} />
                 </ListItem>
-                {movie ? movie.directors.map((director, index) => (
+                {movie ? movie.directors.slice(0, 10).map((director, index) => (
                     <ListItem key={index} disablePadding>
                         <ListItemText primary={director} />
                     </ListItem>
