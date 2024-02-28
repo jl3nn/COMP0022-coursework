@@ -17,7 +17,23 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_PORT=${DB_PORT}
+      - PGPORT=${DB_PORT}
+
+  personality_db:
+    build: ./personality_database
+    ports:
+      - "${PERSONALITY_DB_PORT}:${PERSONALITY_DB_PORT}"
+    environment:
+      - POSTGRES_DB=${PERSONALITY_DB_NAME}
+      - POSTGRES_USER=${PERSONALITY_DB_USER}
+      - POSTGRES_PASSWORD=${PERSONALITY_DB_PASSWORD}
+      - PGPORT=${PERSONALITY_DB_PORT}
+    networks:
+      - backend
+    volumes:
+      - personality_db_init:/docker-entrypoint-initdb.d 
+      # Persists the data in the volume
+      # - personality_db_data:/var/lib/postgresql/data
 
   server:
     build: ./server
@@ -66,6 +82,7 @@ services:
       - "3000:3000"
     environment:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+      GF_LOG_LEVEL: warning
     volumes:
       - ./grafana/datasources:/etc/grafana/provisioning/datasources/
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards/
@@ -97,6 +114,18 @@ services:
       - backend
       - devops
 
+  personality-postgres-exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter
+    environment:
+      - DATA_SOURCE_NAME=postgresql://${PERSONALITY_DB_USER}:${PERSONALITY_DB_PASSWORD}@${PERSONALITY_DB_HOST}:${PERSONALITY_DB_PORT}/${PERSONALITY_DB_NAME}?sslmode=disable
+    ports:
+      - "9188:9187"
+    depends_on:
+      - personality_db
+    networks:
+      - backend
+      - devops
+
   redis:
     image: redis
     ports:
@@ -118,14 +147,9 @@ services:
     depends_on:
       - redis
 
-  jumpbox:
-    image: ubuntu
-    networks:
-      - backend
-      - frontend
-      - devops
-
 volumes:
+  personality_db_init:
+  personality_db_data:
   db_init:
   db_data:
 
