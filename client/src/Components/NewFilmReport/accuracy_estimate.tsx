@@ -110,10 +110,9 @@ const AccuracyEstimate = () => {
             <br />
             Average Difference: {average_difference.toFixed(3)}
           </Typography>
-          <p></p>
           <Box>
             {estimated_accuracy.map((movie: EstimatedAccuracyType) => (
-              <Paper elevation={3} sx={{ padding: 2 }}>
+              <Paper elevation={3} sx={{ padding: 2 }} key={movie.name}>
                 <Typography variant="h6" component="p" gutterBottom>
                   {movie.name}
                 </Typography>
