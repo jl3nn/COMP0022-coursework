@@ -4,9 +4,13 @@ from collections import defaultdict
 from flask import Flask
 from flask_cors import CORS
 from prometheus_flask_exporter import PrometheusMetrics
+from flasgger import Swagger, swag_from
+
 
 # Initialize Flask app
 app = Flask(__name__)
+swagger = Swagger(app)
+
 
 # Initialize cache
 blueprints.common.cache.init_app(app)
@@ -27,6 +31,21 @@ PrometheusMetrics(app)
 
 
 @app.route("/personality-skew", methods=["GET"])
+@swag_from({
+    'tags': ['Personality Analysis'],
+    'description': 'Calculate personality skew based on movie preferences.',
+    'responses': {
+        200: {
+            'description': 'A list of personality types with their corresponding movie genres and Pearson coefficients.',
+            'examples': {
+                'application/json': {
+                    "openness": {"x": ["Drama", "Comedy"], "y": [0.95, 0.85]},
+                    "agreeableness": {"x": ["Family", "Adventure"], "y": [0.90, 0.88]}
+                }
+            }
+        }
+    }
+})
 def calculate_personalities_skew():
     def format_results(results: list[tuple]) -> dict[str, list]:
         personality_genres = defaultdict(list)
