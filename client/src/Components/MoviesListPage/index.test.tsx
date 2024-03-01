@@ -1,6 +1,5 @@
-import { act, fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import MovieListPage from '.';
-import { useSearch } from './SearchContext/context';
 
 // At the top of your test file
 jest.mock("./SearchContext/context", () => ({

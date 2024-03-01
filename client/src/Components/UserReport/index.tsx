@@ -15,13 +15,14 @@ import {
 } from "@mui/material";
 import AutocompleteWithFetch from "../common/AutocompleteSelector";
 import { Bar } from "react-chartjs-2";
-import "chart.js/auto";
+// import "chart.js/auto";
+
+interface SkewData {
+  id: string;
+  avg_rating: number;
+}
 
 function UserReportPage() {
-  interface SkewData {
-    id: string;
-    avg_rating: number;
-  }
   const [genre, setGenres] = useState(null as string | null);
   const [movie, setMovies] = useState(null as string | null);
   const [opinion, setOpinion] = useState(null as number | null);
@@ -52,8 +53,6 @@ function UserReportPage() {
         }
 
         const skewData = (await response.json()) as SkewData[];
-
-        console.log("Skew data:", skewData);
         const skewDataLimit = Math.min(skewData.length, 5);
         setBetter(skewData.slice(0, skewDataLimit));
         setWorse(skewData.slice(-skewDataLimit).reverse());
@@ -61,7 +60,6 @@ function UserReportPage() {
         console.error("Error calculating skew:", error.message);
       }
     };
-
     if (opinion && (genre || movie)) {
       calculateSkew();
     } else {
@@ -100,21 +98,22 @@ function UserReportPage() {
             User Preferences Report
           </Typography>
           <Typography variant="h6">For users that typically</Typography>
-          <RadioGroup
-            row
-            aria-labelledby="demo-radio-buttons-group-label"
-            name="radio-buttons-group"
-            value={opinion}
-            onChange={(event) => setOpinion(parseInt(event.target.value))}
-          >
-            <FormControlLabel value="1" control={<Radio />} label="Like" />
-            <FormControlLabel value="2" control={<Radio />} label="Dislike" />
-            <FormControlLabel
-              value="3"
-              control={<Radio />}
-              label="Are Neutral On"
-            />
-          </RadioGroup>
+          
+            <RadioGroup
+              row
+              aria-labelledby="demo-radio-buttons-group-label"
+              name="radio-buttons-group"
+              value={opinion}
+              onChange={(event) => setOpinion(parseInt(event.target.value))}
+            >
+              <FormControlLabel value="1" control={<Radio />} label="Like" />
+              <FormControlLabel value="2" control={<Radio />} label="Dislike" />
+              <FormControlLabel
+                value="3"
+                control={<Radio />}
+                label="Are Neutral On"
+              />
+            </RadioGroup>
           <Typography variant="h6">the following</Typography>
           <AutocompleteWithFetch
             value={genre}

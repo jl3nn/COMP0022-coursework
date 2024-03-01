@@ -5,9 +5,11 @@ WORKDIR /app
 COPY package*.json .
 RUN npm install
 
-# eclude 
 COPY src /app/src
 COPY public /app/public
+
+ENV CI true
+RUN npm test
 RUN npm run build
 
 FROM nginx:alpine
