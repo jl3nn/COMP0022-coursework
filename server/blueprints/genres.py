@@ -4,7 +4,7 @@ from flask import Blueprint, Response, request
 app = Blueprint("genres", __name__)
 
 
-def get_genres(agg_func: str, precision: int = 3) -> Response:
+def get_genres_by_statistic(agg_func: str, precision: int = 3) -> Response:
     return get_response(
         f"""
         SELECT
@@ -22,7 +22,6 @@ def get_genres(agg_func: str, precision: int = 3) -> Response:
             statistic DESC
         ;
         """,
-        None,
         func=lambda row: {"genre": row[0], "statistic": row[1]},
     )
 
@@ -30,10 +29,9 @@ def get_genres(agg_func: str, precision: int = 3) -> Response:
 def get_genres_by_user_preference(
     min_rating: int = 0, max_rating: int = 5, precision: int = 3
 ) -> Response:
-    genre = request.json.get("genre")
     return get_response(
         f"""
-        WITH RelevantUsers AS (
+        WITH relevant_users AS (
             SELECT
                 DISTINCT r.user_id
             FROM
@@ -49,10 +47,10 @@ def get_genres_by_user_preference(
             HAVING
                 AVG(r.rating) BETWEEN {min_rating} AND {max_rating}
         )
-
+        
         SELECT
             g.genre,
-            ROUND(AVG(r.rating)::NUMERIC, {precision}) AS AvgRating
+            ROUND(AVG(r.rating)::NUMERIC, {precision}) AS avg_rating
         FROM
             movies_genres mg
         INNER JOIN
@@ -60,34 +58,38 @@ def get_genres_by_user_preference(
         INNER JOIN
             ratings r ON mg.movie_id = r.movie_id
         INNER JOIN
-            RelevantUsers ru ON r.user_id = ru.user_id
+            relevant_users ru ON r.user_id = ru.user_id
         WHERE
             g.genre != %(genre)s
         GROUP BY
             g.genre
         ORDER BY
-            AvgRating DESC;
+            avg_rating DESC
+        ;
         """,
-        params={"genre": genre},
+        params={"genre": request.json.get("genre", "")},
         func=lambda row: {"id": row[0], "avg_rating": row[1]},
     )
 
 
 @app.route("/popular", methods=["GET"])
 def get_popular_genres() -> Response:
-    return get_genres("AVG")
+    return get_genres_by_statistic("AVG")
 
 
 @app.route("/controversial", methods=["GET"])
 def get_controversial_genres() -> Response:
-    return get_genres("STDDEV")
+    return get_genres_by_statistic("STDDEV")
 
 
 @app.route("/user-preferences", methods=["POST"])
 def get_user_preferences() -> Response:
     opinion = request.json.get("opinion", 0)
+
     if opinion == 1:
         return get_genres_by_user_preference(4, 5)
+
     if opinion == 2:
         return get_genres_by_user_preference(0, 2)
+
     return get_genres_by_user_preference(2, 4)

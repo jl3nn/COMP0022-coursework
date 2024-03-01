@@ -1,5 +1,5 @@
 # Stage 1: Build Python image and run preprocessing.py
-FROM python:3.11 AS builder
+FROM python:3.12 AS builder
 
 WORKDIR /app
 
