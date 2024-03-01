@@ -5,7 +5,9 @@ WORKDIR /app
 COPY package*.json .
 RUN npm install
 
-COPY . .
+# eclude 
+COPY src /app/src
+COPY public /app/public
 RUN npm run build
 
 FROM nginx:alpine

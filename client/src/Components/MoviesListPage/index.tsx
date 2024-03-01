@@ -110,7 +110,6 @@ function MovieListPage() {
       console.log("Server likely down", error);
     } finally {
       setLoading(false);
-      console.log("Loaded more data");
     }
   };
 
@@ -121,7 +120,7 @@ function MovieListPage() {
         ref={paperRef}
         sx={{ maxHeight: "calc(100vh - 250px)", overflow: "auto", width: 600 }}
       >
-        {loading ? <HourglassBottomIcon /> : <MovieCards data={data} />}
+        {loading ? <div data-testid={'loading'}><HourglassBottomIcon /></div> : <MovieCards data={data} />}
         {!loading && !allDataLoaded && (
           <Button onClick={loadMore}>Load More</Button>
         )}

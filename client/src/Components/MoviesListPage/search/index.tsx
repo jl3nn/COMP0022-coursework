@@ -73,7 +73,7 @@ const SearchComponent = () => {
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton size="small" onClick={() => handleFilterIconClick()}>
-                    <FilterIcon />
+                    <div data-testid={'filter-icon'}><FilterIcon /></div>
                   </IconButton>
                 </InputAdornment>
               ),

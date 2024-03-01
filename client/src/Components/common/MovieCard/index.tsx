@@ -181,15 +181,17 @@ const MovieCard: React.FC<MovieCardProps> = ({
 
 function MovieCards({ data }: { data: any[] }) {
     return (
-        <Stack spacing={2}>
+        <Stack spacing={2} key={'movieStack'}>
             {data.map((movie) => (
-                <MovieCard
-                    imageUrl={movie.imageUrl}
-                    title={movie.title}
-                    year={movie.year}
-                    rating={movie.rating}
-                    movieId={movie.movieId}
-                />
+                <Box key={movie.movieId}>
+                    <MovieCard
+                        imageUrl={movie.imageUrl}
+                        title={movie.title}
+                        year={movie.year}
+                        rating={movie.rating}
+                        movieId={movie.movieId}
+                    />
+                </Box>
             )
             )}
         </Stack>
