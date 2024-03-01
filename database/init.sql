@@ -96,7 +96,6 @@ COPY movies_directors (movie_id, director_id) FROM '/docker-entrypoint-initdb.d/
 
 DELETE FROM movies WHERE movie_id IN (SELECT movie_id FROM movies WHERE
         movie_id NOT IN (SELECT movie_id FROM ratings) OR
-        movie_id NOT IN (SELECT movie_id FROM movies_users_tags) OR
         movie_id NOT IN (SELECT movie_id FROM movies_genres) OR
         movie_id NOT IN (SELECT movie_id FROM movies_actors) OR
         movie_id NOT IN (SELECT movie_id FROM movies_directors)

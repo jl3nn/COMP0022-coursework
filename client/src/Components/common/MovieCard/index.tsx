@@ -113,7 +113,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
 
             <List>
                 <ListItem disablePadding>
-                    <ListItemText primary={'Average Rating:' + rating} />
+                    <ListItemText primary={'Average Rating: ' + rating} />
                 </ListItem>
                 <div style={{ overflowY: 'auto', maxHeight: '100px', paddingRight: '16px' }}>
                     {movie ? movie.ratingsList.slice(0, 10).map((rating, index) => (
