@@ -4,13 +4,13 @@ name: cowsay
 
 services:
   database:
-    build: ./database
+    build: ./databases/database
     networks:
       - backend
     volumes:
       - db_init:/docker-entrypoint-initdb.d
-      - ./init_db/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
-      - ./init_db/create_readonly_user.sql.template:/docker-entrypoint-initdb.d/create_readonly_user.sql.template
+      - ./databases/init_db/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
+      - ./databases/init_db/create_readonly_user.sql.template:/docker-entrypoint-initdb.d/create_readonly_user.sql.template
       # - db_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=${DB_NAME}
@@ -21,7 +21,7 @@ services:
       - READONLY_DB_PASSWORD=${READONLY_DB_PASSWORD}
 
   personality_db:
-    build: ./personality_database
+    build: ./databases/personality_database
     environment:
       - POSTGRES_DB=${PERSONALITY_DB_NAME}
       - POSTGRES_USER=${PERSONALITY_DB_USER}
@@ -33,8 +33,8 @@ services:
       - backend
     volumes:
       - personality_db_init:/docker-entrypoint-initdb.d
-      - ./init_db/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
-      - ./init_db/create_readonly_user.sql.template:/docker-entrypoint-initdb.d/create_readonly_user.sql.template
+      - ./databases/init_db/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
+      - ./databases/init_db/create_readonly_user.sql.template:/docker-entrypoint-initdb.d/create_readonly_user.sql.template
       # - personality_db_data:/var/lib/postgresql/data
 
   server:
