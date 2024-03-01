@@ -9,9 +9,9 @@ services:
       - backend
     volumes:
       - db_init:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/postgresql/data
       - ./databases/init_db/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
       - ./databases/init_db/create_readonly_user.sql.template:/docker-entrypoint-initdb.d/create_readonly_user.sql.template
-      # - db_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
@@ -33,9 +33,9 @@ services:
       - backend
     volumes:
       - personality_db_init:/docker-entrypoint-initdb.d
+      - personality_db_data:/var/lib/postgresql/data
       - ./databases/init_db/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
       - ./databases/init_db/create_readonly_user.sql.template:/docker-entrypoint-initdb.d/create_readonly_user.sql.template
-      # - personality_db_data:/var/lib/postgresql/data
 
   server:
     build: ./server
