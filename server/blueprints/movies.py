@@ -226,7 +226,7 @@ def get_search_results() -> Response:
                 "movieId": row[4],
             },
         ),
-        lambda results: {"all_loaded": len(results) < 15, "results": results},
+        func=lambda results: {"all_loaded": len(results) < 15, "results": results},
     )
 
 

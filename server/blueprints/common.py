@@ -34,9 +34,7 @@ cache = Cache(config=CACHE_SETTINGS)
 
 
 @cache.memoize()
-def execute_query(
-    query: str, params: Optional[dict], conn_name: Optional[str] = "default"
-) -> list[tuple]:
+def execute_query(query: str, params: Optional[dict], conn_name: str) -> list[tuple]:
     with psycopg.connect(**CONN_INFO[conn_name]) as conn:
         with conn.cursor() as cursor:
             cursor.execute(query, params)
@@ -50,10 +48,10 @@ def get_response(
     query: str,
     params: Optional[dict] = None,
     func: Callable[[tuple], Any] = lambda row: row[0],
-    conn_name: Optional[str] = "default",
+    conn_name: str = "default",
 ) -> Response:
     try:
-        results = execute_query(query, params, conn_name=conn_name)
+        results = execute_query(query, params, conn_name)
         return make_response(jsonify(list(map(func, results))), 200)
     except Exception as error:
         print(f"error: {str(error)}")
@@ -64,7 +62,9 @@ def is_error(results: Any) -> bool:
     return isinstance(results, dict) and "error" in results
 
 
-def transform_response(response: Response, func: Callable[[Any], Any]) -> Response:
+def transform_response(
+    response: Response, func: Callable[[Any], Any] = lambda results: results[0]
+) -> Response:
     results = json.loads(response.data.decode("utf-8"))
 
     if is_error(results):

@@ -4,14 +4,12 @@ from flask import Blueprint, Response, jsonify, make_response
 app = Blueprint("caching", __name__)
 
 
-# Testing endpoint to flush the cache
 @app.route("/flush", methods=["GET"])
 def flush_cache() -> Response:
     cache.clear()
     return make_response(jsonify({"message": "Cache flushed"}), 200)
 
 
-# Testing endpoint with a heavy query to check if the cache is working
 @app.route("/test", methods=["GET"])
 def test() -> Response:
     return get_response(
