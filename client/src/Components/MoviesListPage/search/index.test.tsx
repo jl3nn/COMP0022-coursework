@@ -1,6 +1,5 @@
 import { act, render, waitFor } from "@testing-library/react";
 import SearchComponent from ".";
-import { TextField } from "@mui/material";
 import userEvent from "@testing-library/user-event";
 
 jest.mock('../SearchContext/context', () => {
