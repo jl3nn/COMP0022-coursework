@@ -9,12 +9,16 @@ services:
       - backend
     volumes:
       - db_init:/docker-entrypoint-initdb.d
+      - ./init_db/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
+      - ./init_db/create_readonly_user.sql.template:/docker-entrypoint-initdb.d/create_readonly_user.sql.template
       # - db_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - PGPORT=${DB_PORT}
+      - READONLY_DB_USER=${READONLY_DB_USER}
+      - READONLY_DB_PASSWORD=${READONLY_DB_PASSWORD}
 
   personality_db:
     build: ./personality_database
@@ -23,10 +27,14 @@ services:
       - POSTGRES_USER=${PERSONALITY_DB_USER}
       - POSTGRES_PASSWORD=${PERSONALITY_DB_PASSWORD}
       - PGPORT=${PERSONALITY_DB_PORT}
+      - READONLY_DB_USER=${READONLY_PERSONALITY_DB_USER}
+      - READONLY_DB_PASSWORD=${READONLY_PERSONALITY_DB_PASSWORD}
     networks:
       - backend
     volumes:
-      - personality_db_init:/docker-entrypoint-initdb.d 
+      - personality_db_init:/docker-entrypoint-initdb.d
+      - ./init_db/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
+      - ./init_db/create_readonly_user.sql.template:/docker-entrypoint-initdb.d/create_readonly_user.sql.template
       # - personality_db_data:/var/lib/postgresql/data
 
   server:
@@ -42,8 +50,8 @@ services:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_USER=${READONLY_DB_USER}
+      - DB_PASSWORD=${READONLY_DB_PASSWORD}
       - CACHE_HOST=${CACHE_HOST}
       - CACHE_PORT=${CACHE_PORT}
       - CACHE_PASSWORD=${CACHE_PASSWORD}
@@ -51,9 +59,8 @@ services:
       - PERSONALITY_DB_HOST=${PERSONALITY_DB_HOST}
       - PERSONALITY_DB_PORT=${PERSONALITY_DB_PORT}
       - PERSONALITY_DB_NAME=${PERSONALITY_DB_NAME}
-      - PERSONALITY_DB_USER=${PERSONALITY_DB_USER}
-      - PERSONALITY_DB_PASSWORD=${PERSONALITY_DB_PASSWORD}
-
+      - PERSONALITY_DB_USER=${READONLY_PERSONALITY_DB_USER} # change this to READONLY_PERSONALITY_DB_USER
+      - PERSONALITY_DB_PASSWORD=${READONLY_PERSONALITY_DB_PASSWORD}
 
   client:
     build: ./client
@@ -91,7 +98,7 @@ services:
 
   nginx-prometheus-exporter:
     image: nginx/nginx-prometheus-exporter:1.1.0
-    command: [ "--nginx.scrape-uri=http://client/metrics" ]
+    command: ["--nginx.scrape-uri=http://client/metrics"]
     depends_on:
       - client
     networks:
