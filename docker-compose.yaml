@@ -5,13 +5,10 @@ name: cowsay
 services:
   database:
     build: ./database
-    ports:
-      - "${DB_PORT}:${DB_PORT}"
     networks:
       - backend
     volumes:
       - db_init:/docker-entrypoint-initdb.d
-      # Persists the data in the volume
       # - db_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=${DB_NAME}
@@ -21,8 +18,6 @@ services:
 
   personality_db:
     build: ./personality_database
-    ports:
-      - "${PERSONALITY_DB_PORT}:${PERSONALITY_DB_PORT}"
     environment:
       - POSTGRES_DB=${PERSONALITY_DB_NAME}
       - POSTGRES_USER=${PERSONALITY_DB_USER}
@@ -32,7 +27,6 @@ services:
       - backend
     volumes:
       - personality_db_init:/docker-entrypoint-initdb.d 
-      # Persists the data in the volume
       # - personality_db_data:/var/lib/postgresql/data
 
   server:
@@ -75,8 +69,6 @@ services:
 
   prometheus:
     image: prom/prometheus
-    ports:
-      - "9090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
@@ -99,8 +91,6 @@ services:
 
   nginx-prometheus-exporter:
     image: nginx/nginx-prometheus-exporter:1.1.0
-    ports:
-      - "9113:9113"
     command: [ "--nginx.scrape-uri=http://client/metrics" ]
     depends_on:
       - client
@@ -112,8 +102,6 @@ services:
     image: quay.io/prometheuscommunity/postgres-exporter
     environment:
       - DATA_SOURCE_NAME=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable
-    ports:
-      - "9187:9187"
     depends_on:
       - database
     networks:
@@ -124,8 +112,6 @@ services:
     image: quay.io/prometheuscommunity/postgres-exporter
     environment:
       - DATA_SOURCE_NAME=postgresql://${PERSONALITY_DB_USER}:${PERSONALITY_DB_PASSWORD}@${PERSONALITY_DB_HOST}:${PERSONALITY_DB_PORT}/${PERSONALITY_DB_NAME}?sslmode=disable
-    ports:
-      - "9188:9187"
     depends_on:
       - personality_db
     networks:
@@ -134,8 +120,6 @@ services:
 
   redis:
     image: redis
-    ports:
-      - "6379:6379"
     networks:
       - backend
     command: >
@@ -145,8 +129,6 @@ services:
     image: oliver006/redis_exporter
     environment:
       REDIS_ADDR: "redis://:${CACHE_PASSWORD}@redis:6379"
-    ports:
-      - "9121:9121"
     networks:
       - backend
       - devops

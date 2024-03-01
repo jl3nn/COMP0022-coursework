@@ -92,6 +92,7 @@ def calculate_personalities_skew():
             FROM TopGenres
             """,
             func=lambda row: row,
+            conn_name='personality'
         ),
         format_results,
     )
