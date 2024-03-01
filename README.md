@@ -19,7 +19,7 @@ To run the system, follow these steps:
 
 ## 2 - Application Architecture
 
-The application consists of a React frontend (`/client`), a Flask backend (`/server`), two database instances, for isolated data, (`/database` and `/personality-database`), further Reids is used before querying either database. Lastly, logging and alerting are set up (`\postgres` and `\grafana`).
+The application consists of a React frontend (`/client`), a Flask backend (`/server`), two database instances, for isolated data, (`/database` and `/personality-database`), further Redis is used before querying either database. Lastly, logging and alerting are set up (`\postgres` and `\grafana`).
 
 The following ports are open:
 - `80` - For hosting the frontend
