@@ -15,13 +15,13 @@ import {
 import AutocompleteWithFetch from "../common/AutocompleteSelector";
 
 interface Rating {
-  averageBias: number;
   averageRating: number;
-  genreBias: number;
-  predictedRating: number;
   subsetRating: number;
-  tagBias: number;
   userBias: number;
+  genreBias: number;
+  tagBias: number;
+  averageBias: number;
+  predictedRating: number;
 }
 
 function IndividualEstimate() {
@@ -84,7 +84,7 @@ function IndividualEstimate() {
   }, [movie]);
 
   const errorCalculation = rating
-    ? Math.abs(rating.averageRating - rating.predictedRating).toFixed(2)
+    ? Math.abs(rating.averageRating - rating.predictedRating).toFixed(3)
     : 0;
 
   return (
@@ -115,11 +115,11 @@ function IndividualEstimate() {
               Analyzed for users: <strong>{user.join(", ")}</strong>
             </Typography>
             <Typography variant="body2" sx={{ fontSize: "1rem" }}>
-              Simple Prediction: {rating.subsetRating.toFixed(2)}
+              Simple Prediction: {rating.subsetRating.toFixed(3)}
               <br />
-              Bias-Adjusted Prediction: {rating.predictedRating.toFixed(2)}
+              Bias-Adjusted Prediction: {rating.predictedRating.toFixed(3)}
               <br />
-              <strong>Actual Rating: {rating.averageRating.toFixed(2)}</strong>
+              <strong>Actual Rating: {rating.averageRating.toFixed(3)}</strong>
               <br />
               <Box sx={{ mt: 2, fontSize: "1rem", color: "error.main" }}>
                 Prediction Error: {errorCalculation}
@@ -143,24 +143,24 @@ function IndividualEstimate() {
               <List dense>
                 <ListItem>
                   <ListItemText
-                    primary={`Average Bias: ${rating.averageBias}`}
+                    primary={`Average Bias: ${rating.averageBias.toFixed(3)}`}
                   />
                 </ListItem>
                 <ListItem>
                   <ListItemText
-                    primary={`Genre Bias: ${rating.genreBias}`}
+                    primary={`User Bias: ${rating.userBias.toFixed(3)}`}
                     sx={{ fontSize: "1.25rem" }}
                   />
                 </ListItem>
                 <ListItem>
                   <ListItemText
-                    primary={`Tag Bias: ${rating.tagBias}`}
+                    primary={`Genre Bias: ${rating.genreBias.toFixed(3)}`}
                     sx={{ fontSize: "1.25rem" }}
                   />
                 </ListItem>
                 <ListItem>
                   <ListItemText
-                    primary={`User Bias: ${rating.userBias}`}
+                    primary={`Tag Bias: ${rating.tagBias.toFixed(3)}`}
                     sx={{ fontSize: "1.25rem" }}
                   />
                 </ListItem>

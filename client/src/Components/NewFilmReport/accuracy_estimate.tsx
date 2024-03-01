@@ -66,7 +66,6 @@ const AccuracyEstimate = () => {
     );
     const bestMovies = (await response.json()).results;
     const movie_names = bestMovies.map((movie: any) => movie.title);
-    const movie_ratings = bestMovies.map((movie: any) => movie.rating);
 
     const estimated_ratings_promises = movie_names.map((name: string) =>
       getMoviePrediction(name)
@@ -76,7 +75,7 @@ const AccuracyEstimate = () => {
     const estimated_accuracy = movie_names.map(
       (name: string, index: number) => ({
         name: name,
-        rating: movie_ratings[index],
+        rating: estimated_ratings[index].averageRating,
         estimated_rating: estimated_ratings[index].predictedRating,
       })
     );
@@ -109,7 +108,7 @@ const AccuracyEstimate = () => {
           <Typography variant="h4">
             <strong>Estimated Accuracy</strong>
             <br />
-            Average Difference: {average_difference}
+            Average Difference: {average_difference.toFixed(3)}
           </Typography>
           <p></p>
           <Box>
@@ -119,10 +118,10 @@ const AccuracyEstimate = () => {
                   {movie.name}
                 </Typography>
                 <Typography variant="body1" component="p">
-                  Actual Rating: {movie.rating}
+                  Actual Rating: {movie.rating.toFixed(3)}
                 </Typography>
                 <Typography variant="body1" component="p">
-                  Estimated Rating: {movie.estimated_rating}
+                  Estimated Rating: {movie.estimated_rating.toFixed(3)}
                 </Typography>
               </Paper>
             ))}
