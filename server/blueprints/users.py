@@ -50,7 +50,7 @@ def get_users_for_prediction() -> Response:
         GROUP BY
             r.user_id
         LIMIT
-            5
+            10
         ;
         """,
         params={"movie": request.json.get("movie", "")},
