@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box,
   Button,
   Card,
   CardContent,
@@ -121,10 +120,10 @@ function IndividualEstimate() {
               <br />
               <strong>Actual Rating: {rating.averageRating.toFixed(3)}</strong>
               <br />
-              <Box sx={{ mt: 2, fontSize: "1rem", color: "error.main" }}>
+              </Typography>
+              <Typography sx={{ mt: 2, fontSize: "1rem", color: "error.main" }}>
                 Prediction Error: {errorCalculation}
-              </Box>
-            </Typography>
+              </Typography>
           </CardContent>
           <CardActions disableSpacing>
             <Button

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Slider, Stack, Typography } from '@mui/material';
-import AutocompleteWithFetch from '../common/AutocompleteSelector';
+import { Stack, Typography } from '@mui/material';
 import BarChartComponent from './BarChartComponent';
 
 interface Results {

@@ -12,7 +12,6 @@ ChartJS.register(
   Legend
 );
 
-// Assuming you have a prop that includes all personality types and their data
 type FullDataType = {
   [personality: string]: DataType;
 };

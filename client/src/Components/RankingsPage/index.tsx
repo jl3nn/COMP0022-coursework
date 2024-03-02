@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container, Paper, Typography, Box, Stack } from "@mui/material";
 import { Bar } from "react-chartjs-2";
-import "chart.js/auto";
 
 function RankingsPage() {
   interface GenreData {
