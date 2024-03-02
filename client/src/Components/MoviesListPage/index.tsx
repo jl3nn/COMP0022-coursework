@@ -1,4 +1,3 @@
-// App.js
 import React, { useEffect, useState, useRef } from "react";
 import { useSearch } from "./SearchContext/context";
 import { Button, Paper, Stack } from "@mui/material";
@@ -71,7 +70,7 @@ function MovieListPage() {
         paperElement.scrollTop = scrollPosition;
       });
     }
-  }, [data]);
+  }, [data, scrollPosition]);
 
   const loadMore = async () => {
     const currentScrollPosition = paperRef.current?.scrollTop || 0;
