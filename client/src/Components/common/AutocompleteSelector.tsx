@@ -17,13 +17,16 @@ const AutocompleteWithFetch = ({ apiUrl, disabled, onChange, label, value, multi
   const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
-    let url = `${apiUrl}?prefix=${inputValue}`
+    async function fetchData() {
+      let url = `${apiUrl}?prefix=${inputValue}`
     if (suffix) {
       url += `&${suffix}`;
     }
-    fetch(url, { mode: 'cors' })
-      .then((response) => response.json())
-      .then((data) => {setFetchOptions(data)});
+    const response = await fetch(url, { mode: 'cors' })
+    const data = await response.json()
+    setFetchOptions(data)
+    }
+    fetchData();
   }, [apiUrl, inputValue, suffix]);
 
   return (

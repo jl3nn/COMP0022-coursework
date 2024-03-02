@@ -14,7 +14,7 @@ import {
     List,
     ListItem,
     ListItemText
-} from '@mui/material';
+} from '@mui/material'; 
 
 interface MovieCardProps {
     imageUrl: string;
@@ -47,17 +47,20 @@ const MovieCard: React.FC<MovieCardProps> = ({
     const [isModalOpen, setModalOpen] = useState(false);
 
     const handleModalOpen = () => {
-        setModalOpen(true);
-        fetch(`http://localhost:5555/movies/get-by-id?movieId=${movieId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            mode: 'cors'
-        }).then((response) => response.json())
-            .then((data) => {
-                setMovie(data[0]);
+        async function fetchMovie() {
+            const response = await fetch(`http://localhost:5555/movies/get-by-id?movieId=${movieId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                mode: 'cors'
             });
+            const data = await response.json();
+            setMovie(data[0]);
+        }
+
+        setModalOpen(true);
+        fetchMovie();
     };
 
     const handleModalClose = () => {
@@ -179,7 +182,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
     );
 };
 
-function MovieCards({ data }: { data: any[] }) {
+function MovieCards({ data }: { data: MovieCardProps[] }) {
     return (
         <Stack spacing={2} key={'movieStack'}>
             {data.map((movie) => (
