@@ -107,7 +107,7 @@ const AccuracyEstimate = () => {
           <Typography variant="h4">
             <strong>Estimated Accuracy</strong>
             <br />
-            Average Difference: {average_difference.toFixed(3)}
+            Average Difference: {average_difference.toFixed(2)}
           </Typography>
           <Box>
             {estimated_accuracy.map((movie: EstimatedAccuracyType) => (
@@ -116,10 +116,10 @@ const AccuracyEstimate = () => {
                   {movie.name}
                 </Typography>
                 <Typography variant="body1" component="p">
-                  Actual Rating: {movie.rating.toFixed(3)}
+                  Actual Rating: {movie.rating.toFixed(2)}
                 </Typography>
                 <Typography variant="body1" component="p">
-                  Estimated Rating: {movie.estimated_rating.toFixed(3)}
+                  Estimated Rating: {movie.estimated_rating.toFixed(2)}
                 </Typography>
               </Paper>
             ))}

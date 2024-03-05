@@ -114,11 +114,11 @@ function IndividualEstimate() {
               Analyzed for users: <strong>{user.join(", ")}</strong>
             </Typography>
             <Typography variant="body2" sx={{ fontSize: "1rem" }}>
-              Simple Prediction: {rating.subsetRating.toFixed(3)}
+              Simple Prediction: {rating.subsetRating.toFixed(2)}
               <br />
-              Bias-Adjusted Prediction: {rating.predictedRating.toFixed(3)}
+              Bias-Adjusted Prediction: {rating.predictedRating.toFixed(2)}
               <br />
-              <strong>Actual Rating: {rating.averageRating.toFixed(3)}</strong>
+              <strong>Actual Rating: {rating.averageRating.toFixed(2)}</strong>
               <br />
               </Typography>
               <Typography sx={{ mt: 2, fontSize: "1rem", color: "error.main" }}>
@@ -142,29 +142,28 @@ function IndividualEstimate() {
               <List dense>
                 <ListItem>
                   <ListItemText
-                    primary={`Average Bias: ${rating.averageBias.toFixed(3)}`}
+                    primary={`Average Bias: ${rating.averageBias.toFixed(2)}`}
                   />
                 </ListItem>
                 <ListItem>
                   <ListItemText
-                    primary={`User Bias: ${rating.userBias.toFixed(3)}`}
+                    primary={`User Bias: ${rating.userBias.toFixed(2)}`}
                     sx={{ fontSize: "1.25rem" }}
                   />
                 </ListItem>
                 <ListItem>
                   <ListItemText
-                    primary={`Genre Bias: ${rating.genreBias.toFixed(3)}`}
+                    primary={`Genre Bias: ${rating.genreBias.toFixed(2)}`}
                     sx={{ fontSize: "1.25rem" }}
                   />
                 </ListItem>
                 <ListItem>
                   <ListItemText
-                    primary={`Tag Bias: ${rating.tagBias.toFixed(3)}`}
+                    primary={`Tag Bias: ${rating.tagBias.toFixed(2)}`}
                     sx={{ fontSize: "1.25rem" }}
                   />
                 </ListItem>
               </List>
-              {/* Visualization Component here if applicable */}
             </CardContent>
           </Collapse>
         </Card>

@@ -74,7 +74,7 @@ def transform_response(
 
 
 def concat_responses(responses: list[Response]) -> Response:
-    rows = []
+    rows = set()
 
     for response in responses:
         results = json.loads(response.data.decode("utf-8"))
@@ -82,6 +82,6 @@ def concat_responses(responses: list[Response]) -> Response:
         if is_error(results):
             return response
         else:
-            rows.extend(results)
+            rows.add(frozenset(results))
 
-    return make_response(jsonify(rows), 200)
+    return make_response(jsonify([list(row) for row in rows]), 200)

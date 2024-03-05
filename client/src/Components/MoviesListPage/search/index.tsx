@@ -33,9 +33,10 @@ const SearchComponent = () => {
       return;
     } else {
       let url = `http://localhost:5555/autocomplete/search?prefix=${s}`
-      fetch(url, { mode: 'cors' })
-        .then((response) => response.json())
-        .then((data) => {setData(data)});
+      const response = await fetch(url, { mode: 'cors' })
+      const data = await response.json();
+      setData(data);
+      console.log(data);
     }
   }
 
