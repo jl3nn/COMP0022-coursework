@@ -1,9 +1,10 @@
 FROM python:3.12
 
 WORKDIR /app
-COPY . /app
+COPY  requirements.txt /app
 
 RUN pip install --no-cache-dir -r requirements.txt
-EXPOSE 5555
+
+COPY . /app
 
 CMD ["gunicorn", "server:app", "-b", "0.0.0.0:5555"]
