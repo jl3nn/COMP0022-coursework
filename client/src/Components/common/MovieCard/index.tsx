@@ -159,7 +159,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
           <Box sx={{ marginTop: 2, height: 300 }}>
             <ListItem disablePadding>
               <ListItemText
-                primary={"Ratings distribution"}
+                primary={"Rating Distribution"}
                 primaryTypographyProps={{
                   variant: "subtitle1",
                   fontWeight: "bold",
