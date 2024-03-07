@@ -52,24 +52,28 @@ function RankingsPage() {
     ],
   };
 
-  const chartOptions = {
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: {
-          callback: function(value: any, index: any, values: any) {
-            return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-          }
-        }
+  const chartOptions = (maxY?: number) => {
+    return {
+      scales: {
+        y: {
+          min: 0,
+          max: maxY,
+          ticks: {
+            callback: function (value: any, index: any, values: any) {
+              return value.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              });
+            },
+          },
+        },
+        x: {
+          ticks: {
+            autoSkip: false,
+          },
+        },
       },
-      x: {
-        ticks: {
-          callback: function(value: any, index: any, values: any) {
-            return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-          }
-        }
-      }
-    },
+    };
   };
 
   return (
@@ -80,10 +84,7 @@ function RankingsPage() {
             Most Popular Genres - Average Rating
           </Typography>
           <Box sx={{ minHeight: "350px", overflow: "auto" }}>
-            <Bar
-              data={popularChartData}
-              options={chartOptions}
-            />
+            <Bar data={popularChartData} options={chartOptions(5)} />
           </Box>
         </Paper>
         <Paper elevation={3} sx={{ p: 4, width: "100%" }}>
@@ -91,10 +92,7 @@ function RankingsPage() {
             Most Controversial Genres - Standard Deviation
           </Typography>
           <Box sx={{ minHeight: "350px", overflow: "auto" }}>
-            <Bar
-              data={controversialChartData}
-              options={chartOptions}
-            />
+            <Bar data={controversialChartData} options={chartOptions()} />
           </Box>
         </Paper>
       </Stack>
