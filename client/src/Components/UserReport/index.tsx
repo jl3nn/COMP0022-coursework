@@ -92,14 +92,27 @@ function UserReportPage() {
   const chartOptions = {
     scales: {
       y: {
-        beginAtZero: true,
+        title: {
+          display: true,
+          text: "Average Rating",
+        },
+        min: 0,
+        max: 5,
         ticks: {
           callback: function (value: any, index: any, values: any) {
-            return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-          }
-        }
-      }
-    }
+            return value.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            });
+          },
+        },
+      },
+      x: {
+        ticks: {
+          autoSkip: false,
+        },
+      },
+    },
   };
 
   return (
@@ -185,10 +198,7 @@ function UserReportPage() {
           <Typography variant="h6" gutterBottom>
             Rating Distribution
           </Typography>
-          <Bar
-            data={chartData}
-            options={chartOptions}
-          />
+          <Bar data={chartData} options={chartOptions} />
         </Box>
       </Paper>
     </Container>

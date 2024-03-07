@@ -122,7 +122,7 @@ function IndividualEstimate() {
               <br />
             </Typography>
             <Typography sx={{ mt: 2, fontSize: "1rem", color: "error.main" }}>
-              Prediction Error: {errorCalculation}
+              Absolute Prediction Error: {errorCalculation}
             </Typography>
           </CardContent>
           <CardActions disableSpacing>
