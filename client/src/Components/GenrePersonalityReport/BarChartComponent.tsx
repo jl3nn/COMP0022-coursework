@@ -50,19 +50,12 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({ data }) => {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: function(value: any, index: any, values: any) {
-            return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-          }
-        }
-      },
-      x: {
-        ticks: {
-          callback: function(value: any, index: any, values: any) {
+          callback: function (value: any, index: any, values: any) {
             return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
           }
         }
       }
-    },
+    }
   };
 
   return (

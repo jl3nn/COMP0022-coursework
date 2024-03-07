@@ -32,9 +32,8 @@ function UserReportPage() {
   useEffect(() => {
     const calculateSkew = async () => {
       try {
-        const apiUrl = `http://localhost:5555/${
-          genre ? "genres" : "movies"
-        }/user-preferences`;
+        const apiUrl = `http://localhost:5555/${genre ? "genres" : "movies"
+          }/user-preferences`;
 
         const response = await fetch(apiUrl, {
           method: "POST",
@@ -95,19 +94,12 @@ function UserReportPage() {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: function(value: any, index: any, values: any) {
-            return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-          }
-        }
-      },
-      x: {
-        ticks: {
-          callback: function(value: any, index: any, values: any) {
+          callback: function (value: any, index: any, values: any) {
             return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
           }
         }
       }
-    },
+    }
   };
 
   return (
@@ -118,22 +110,22 @@ function UserReportPage() {
             User Preferences Report
           </Typography>
           <Typography variant="h6">For users that typically</Typography>
-          
-            <RadioGroup
-              row
-              aria-labelledby="demo-radio-buttons-group-label"
-              name="radio-buttons-group"
-              value={opinion}
-              onChange={(event) => setOpinion(parseInt(event.target.value))}
-            >
-              <FormControlLabel value="1" control={<Radio />} label="Like" />
-              <FormControlLabel value="2" control={<Radio />} label="Dislike" />
-              <FormControlLabel
-                value="3"
-                control={<Radio />}
-                label="Are Neutral On"
-              />
-            </RadioGroup>
+
+          <RadioGroup
+            row
+            aria-labelledby="demo-radio-buttons-group-label"
+            name="radio-buttons-group"
+            value={opinion}
+            onChange={(event) => setOpinion(parseInt(event.target.value))}
+          >
+            <FormControlLabel value="1" control={<Radio />} label="Like" />
+            <FormControlLabel value="2" control={<Radio />} label="Dislike" />
+            <FormControlLabel
+              value="3"
+              control={<Radio />}
+              label="Are Neutral On"
+            />
+          </RadioGroup>
           <Typography variant="h6">the following</Typography>
           <AutocompleteWithFetch
             value={genre}

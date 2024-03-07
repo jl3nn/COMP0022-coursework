@@ -7,11 +7,11 @@ from typing import Any, Callable, Optional
 
 CONN_INFO = {
     "movielens": {
-        "dbname": os.environ.get("DB_NAME"),
-        "user": os.environ.get("DB_USER"),
-        "password": os.environ.get("DB_PASSWORD"),
-        "host": os.environ.get("DB_HOST"),
-        "port": os.environ.get("DB_PORT"),
+        "dbname": os.environ.get("MOVIELENS_DB_NAME"),
+        "user": os.environ.get("MOVIELENS_DB_USER"),
+        "password": os.environ.get("MOVIELENS_DB_PASSWORD"),
+        "host": os.environ.get("MOVIELENS_DB_HOST"),
+        "port": os.environ.get("MOVIELENS_DB_PORT"),
     },
     "personality": {
         "dbname": os.environ.get("PERSONALITY_DB_NAME"),
