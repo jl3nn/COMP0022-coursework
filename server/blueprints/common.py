@@ -81,7 +81,7 @@ def concat_responses(responses: list[Response]) -> Response:
 
         if is_error(results):
             return response
-        else:
-            rows.update(results)
+
+        rows.update(results)
 
     return make_response(jsonify(list(rows)), 200)
