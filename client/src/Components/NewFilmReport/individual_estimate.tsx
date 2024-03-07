@@ -83,7 +83,7 @@ function IndividualEstimate() {
   }, [movie]);
 
   const errorCalculation = rating
-    ? Math.abs(rating.averageRating - rating.predictedRating).toFixed(3)
+    ? Math.abs(rating.averageRating - rating.predictedRating).toFixed(2)
     : 0;
 
   return (
@@ -120,10 +120,10 @@ function IndividualEstimate() {
               <br />
               <strong>Actual Rating: {rating.averageRating.toFixed(2)}</strong>
               <br />
-              </Typography>
-              <Typography sx={{ mt: 2, fontSize: "1rem", color: "error.main" }}>
-                Prediction Error: {errorCalculation}
-              </Typography>
+            </Typography>
+            <Typography sx={{ mt: 2, fontSize: "1rem", color: "error.main" }}>
+              Absolute Prediction Error: {errorCalculation}
+            </Typography>
           </CardContent>
           <CardActions disableSpacing>
             <Button

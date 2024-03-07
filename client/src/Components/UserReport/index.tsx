@@ -93,20 +93,26 @@ function UserReportPage() {
   const chartOptions = {
     scales: {
       y: {
-        beginAtZero: true,
+        title: {
+          display: true,
+          text: "Average Rating",
+        },
+        min: 0,
+        max: 5,
         ticks: {
-          callback: function(value: any, index: any, values: any) {
-            return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-          }
-        }
+          callback: function (value: any, index: any, values: any) {
+            return value.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            });
+          },
+        },
       },
       x: {
         ticks: {
-          callback: function(value: any, index: any, values: any) {
-            return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-          }
-        }
-      }
+          autoSkip: false,
+        },
+      },
     },
   };
 
@@ -118,22 +124,22 @@ function UserReportPage() {
             User Preferences Report
           </Typography>
           <Typography variant="h6">For users that typically</Typography>
-          
-            <RadioGroup
-              row
-              aria-labelledby="demo-radio-buttons-group-label"
-              name="radio-buttons-group"
-              value={opinion}
-              onChange={(event) => setOpinion(parseInt(event.target.value))}
-            >
-              <FormControlLabel value="1" control={<Radio />} label="Like" />
-              <FormControlLabel value="2" control={<Radio />} label="Dislike" />
-              <FormControlLabel
-                value="3"
-                control={<Radio />}
-                label="Are Neutral On"
-              />
-            </RadioGroup>
+
+          <RadioGroup
+            row
+            aria-labelledby="demo-radio-buttons-group-label"
+            name="radio-buttons-group"
+            value={opinion}
+            onChange={(event) => setOpinion(parseInt(event.target.value))}
+          >
+            <FormControlLabel value="1" control={<Radio />} label="Like" />
+            <FormControlLabel value="2" control={<Radio />} label="Dislike" />
+            <FormControlLabel
+              value="3"
+              control={<Radio />}
+              label="Are Neutral On"
+            />
+          </RadioGroup>
           <Typography variant="h6">the following</Typography>
           <AutocompleteWithFetch
             value={genre}
@@ -193,10 +199,7 @@ function UserReportPage() {
           <Typography variant="h6" gutterBottom>
             Rating Distribution
           </Typography>
-          <Bar
-            data={chartData}
-            options={chartOptions}
-          />
+          <Bar data={chartData} options={chartOptions} />
         </Box>
       </Paper>
     </Container>
