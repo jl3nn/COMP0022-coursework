@@ -129,9 +129,8 @@ const MovieCard: React.FC<MovieCardProps> = ({
           border: "2px solid #000",
           boxShadow: 24,
           p: 4,
-          borderRadius: 8,
-          marginY: 3,
-          overflow: "auto",
+          maxHeight: "80vh",
+          overflowY: "auto",
         }}
       >
         {Title}
