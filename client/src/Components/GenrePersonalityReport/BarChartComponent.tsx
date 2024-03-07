@@ -45,11 +45,23 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({ data }) => {
     ],
   };
 
-  const options = {
+  const chartOptions = {
     scales: {
       y: {
         beginAtZero: true,
+        ticks: {
+          callback: function(value: any, index: any, values: any) {
+            return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          }
+        }
       },
+      x: {
+        ticks: {
+          callback: function(value: any, index: any, values: any) {
+            return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          }
+        }
+      }
     },
   };
 
@@ -71,7 +83,7 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({ data }) => {
           ))}
         </Select>
       </FormControl>
-      <Bar data={chartData} options={options} />
+      <Bar data={chartData} options={chartOptions} />
     </Paper>
   );
 };

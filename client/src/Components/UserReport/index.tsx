@@ -90,6 +90,26 @@ function UserReportPage() {
     ],
   };
 
+  const chartOptions = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value: any, index: any, values: any) {
+            return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          }
+        }
+      },
+      x: {
+        ticks: {
+          callback: function(value: any, index: any, values: any) {
+            return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          }
+        }
+      }
+    },
+  };
+
   return (
     <Container maxWidth="md">
       <Paper elevation={3} sx={{ p: 4, mt: 4, mb: 4 }}>
@@ -141,7 +161,7 @@ function UserReportPage() {
                   <ListItem key={index}>
                     <ListItemText
                       primary={b.id}
-                      secondary={`Rating: ${b.avg_rating}`}
+                      secondary={`Rating: ${Number(b.avg_rating).toFixed(2)}`}
                     />
                   </ListItem>
                 ))
@@ -157,7 +177,7 @@ function UserReportPage() {
                   <ListItem key={index}>
                     <ListItemText
                       primary={w.id}
-                      secondary={`Rating: ${w.avg_rating}`}
+                      secondary={`Rating: ${Number(w.avg_rating).toFixed(2)}`}
                     />
                   </ListItem>
                 ))
@@ -175,7 +195,7 @@ function UserReportPage() {
           </Typography>
           <Bar
             data={chartData}
-            options={{ scales: { y: { beginAtZero: true } } }}
+            options={chartOptions}
           />
         </Box>
       </Paper>

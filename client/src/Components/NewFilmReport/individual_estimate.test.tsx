@@ -44,7 +44,7 @@ test('displays info when movie selected', async () => {
     const { getByRole, getByText } = await render(<IndividualEstimate />);
     const button = await waitFor(() => getByRole('button', {name: 'CLICK ME'}));
     await fireEvent.click(button);
-    const averageRating = await waitFor(() => getByText(/Actual Rating: 4.500/));
+    const averageRating = await waitFor(() => getByText(/Actual Rating: 4.50/));
     const movieName = await waitFor(() => getByText(/New Movie/));
     expect(movieName).toBeInTheDocument();
     expect(averageRating).toBeInTheDocument();

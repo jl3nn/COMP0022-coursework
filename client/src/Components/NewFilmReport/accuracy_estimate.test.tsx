@@ -51,6 +51,6 @@ test('displays data when button pressed', async () => {
     const { getByRole, getByText } = await render(<AccuracyEstimate />);
     const estimateAccuracyButton = await waitFor(() => getByRole('button', {name: 'Estimate Accuracy'}));
     fireEvent.click(estimateAccuracyButton);
-    const averageRating = await waitFor(() => getByText(/Actual Rating: 4.500/));
+    const averageRating = await waitFor(() => getByText(/Actual Rating: 4.50/));
     expect(averageRating).toBeInTheDocument();
 });

@@ -52,6 +52,26 @@ function RankingsPage() {
     ],
   };
 
+  const chartOptions = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value: any, index: any, values: any) {
+            return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          }
+        }
+      },
+      x: {
+        ticks: {
+          callback: function(value: any, index: any, values: any) {
+            return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          }
+        }
+      }
+    },
+  };
+
   return (
     <Container maxWidth="md">
       <Stack spacing={3} alignItems="center" margin={5}>
@@ -62,7 +82,7 @@ function RankingsPage() {
           <Box sx={{ minHeight: "350px", overflow: "auto" }}>
             <Bar
               data={popularChartData}
-              options={{ scales: { y: { beginAtZero: true } } }}
+              options={chartOptions}
             />
           </Box>
         </Paper>
@@ -73,7 +93,7 @@ function RankingsPage() {
           <Box sx={{ minHeight: "350px", overflow: "auto" }}>
             <Bar
               data={controversialChartData}
-              options={{ scales: { y: { beginAtZero: true } } }}
+              options={chartOptions}
             />
           </Box>
         </Paper>
