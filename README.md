@@ -22,9 +22,9 @@ To run the system, follow these steps:
 The application consists of a React frontend (`/client`), a Flask backend (`/server`), and two database instances for isolated data (`/databases/movielens` and `/databases/personality`). Further, Redis is used before querying either database. Lastly, logging and alerting are set up (`/prometheus` and `/grafana`).
 
 The following ports are open:
-- `80` - For hosting the frontend
-- `5555` - For API server requests
-- `3000` - For the Grafana dashboard
+- `80` for hosting the frontend
+- `5555` for API server requests
+- `3000` for the Grafana dashboard
 
 All configuration is managed through Docker Compose. Any relevant passwords are defined in `.env.template`.
 
