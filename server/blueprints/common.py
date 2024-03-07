@@ -1,3 +1,4 @@
+from enum import auto, Enum
 from flask import jsonify, make_response, Response
 from flask_caching import Cache
 import json
@@ -5,15 +6,21 @@ import os
 import psycopg
 from typing import Any, Callable, Optional
 
+
+class Database(Enum):
+    MOVIELENS = auto()
+    PERSONALITY = auto()
+
+
 CONN_INFO = {
-    "movielens": {
+    Database.MOVIELENS: {
         "dbname": os.environ.get("MOVIELENS_DB_NAME"),
         "user": os.environ.get("MOVIELENS_DB_USER"),
         "password": os.environ.get("MOVIELENS_DB_PASSWORD"),
         "host": os.environ.get("MOVIELENS_DB_HOST"),
         "port": os.environ.get("MOVIELENS_DB_PORT"),
     },
-    "personality": {
+    Database.PERSONALITY: {
         "dbname": os.environ.get("PERSONALITY_DB_NAME"),
         "user": os.environ.get("PERSONALITY_DB_USER"),
         "password": os.environ.get("PERSONALITY_DB_PASSWORD"),
@@ -34,7 +41,7 @@ cache = Cache(config=CACHE_SETTINGS)
 
 
 @cache.memoize()
-def execute_query(query: str, params: Optional[dict], db: str) -> list[tuple]:
+def execute_query(query: str, params: Optional[dict], db: Database) -> list[tuple]:
     with psycopg.connect(**CONN_INFO[db]) as conn:
         with conn.cursor() as cursor:
             cursor.execute(query, params)
@@ -48,7 +55,7 @@ def get_response(
     query: str,
     params: Optional[dict] = None,
     func: Callable[[tuple], Any] = lambda row: row[0],
-    db: str = "movielens",
+    db: Database = Database.MOVIELENS,
 ) -> Response:
     try:
         results = execute_query(query, params, db)

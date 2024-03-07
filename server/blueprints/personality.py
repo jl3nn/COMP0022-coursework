@@ -1,5 +1,5 @@
 from collections import defaultdict
-from .common import get_response, transform_response
+from .common import Database, get_response, transform_response
 from flasgger import swag_from
 from flask import Blueprint, Response
 
@@ -89,10 +89,10 @@ def calculate_personalities_skew() -> Response:
                 personality_type,
                 genre,
                 pearson_coeff
-            FROM TopGenres
+            FROM TopGenres;
             """,
             func=lambda row: row,
-            db="personality",
+            db=Database.PERSONALITY,
         ),
         format_results,
     )
