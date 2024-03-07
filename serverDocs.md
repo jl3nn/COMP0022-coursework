@@ -2459,19 +2459,19 @@ This operation does not require authentication
 
 <h1 id="a-swagger-api-personality-analysis">Personality Analysis</h1>
 
-## get__personality-skew
+## get__personality_skew
 
 > Code samples
 
 ```shell
 # You can also use wget
-curl -X GET /personality-skew \
+curl -X GET /personality/skew \
   -H 'Accept: application/json'
 
 ```
 
 ```http
-GET /personality-skew HTTP/1.1
+GET /personality/skew HTTP/1.1
 
 Accept: application/json
 
@@ -2483,7 +2483,7 @@ const headers = {
   'Accept':'application/json'
 };
 
-fetch('/personality-skew',
+fetch('/personality/skew',
 {
   method: 'GET',
 
@@ -2505,7 +2505,7 @@ headers = {
   'Accept' => 'application/json'
 }
 
-result = RestClient.get '/personality-skew',
+result = RestClient.get '/personality/skew',
   params: {
   }, headers: headers
 
@@ -2519,7 +2519,7 @@ headers = {
   'Accept': 'application/json'
 }
 
-r = requests.get('/personality-skew', headers = headers)
+r = requests.get('/personality/skew', headers = headers)
 
 print(r.json())
 
@@ -2540,7 +2540,7 @@ $client = new \GuzzleHttp\Client();
 $request_body = array();
 
 try {
-    $response = $client->request('GET','/personality-skew', array(
+    $response = $client->request('GET','/personality/skew', array(
         'headers' => $headers,
         'json' => $request_body,
        )
@@ -2557,7 +2557,7 @@ try {
 ```
 
 ```java
-URL obj = new URL("/personality-skew");
+URL obj = new URL("/personality/skew");
 HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 con.setRequestMethod("GET");
 int responseCode = con.getResponseCode();
@@ -2588,7 +2588,7 @@ func main() {
     }
 
     data := bytes.NewBuffer([]byte{jsonReq})
-    req, err := http.NewRequest("GET", "/personality-skew", data)
+    req, err := http.NewRequest("GET", "/personality/skew", data)
     req.Header = headers
 
     client := &http.Client{}
@@ -2598,7 +2598,7 @@ func main() {
 
 ```
 
-`GET /personality-skew`
+`GET /personality/skew`
 
 Calculate personality skew based on movie preferences.
 
@@ -2631,13 +2631,13 @@ Calculate personality skew based on movie preferences.
 }
 ```
 
-<h3 id="get__personality-skew-responses">Responses</h3>
+<h3 id="get__personality_skew-responses">Responses</h3>
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
 |200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|A list of personality types with their corresponding movie genres and Pearson coefficients.|None|
 
-<h3 id="get__personality-skew-responseschema">Response Schema</h3>
+<h3 id="get__personality_skew-responseschema">Response Schema</h3>
 
 <aside class="success">
 This operation does not require authentication
@@ -2829,13 +2829,13 @@ Generates a prediction for a movie rating based on user, genre, and tag biases.
 
 ```json
 {
-  "averageBias": 0.02,
+  "averageBias": 1.07,
   "averageRating": 4.5,
-  "genreBias": -0.05,
-  "predictedRating": 4.25,
+  "genreBias": 1.09,
+  "predictedRating": 4.494,
   "subsetRating": 4.2,
-  "tagBias": 0.02,
-  "userBias": 0.1
+  "tagBias": 1,
+  "userBias": 1.05
 }
 ```
 
