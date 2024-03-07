@@ -69,8 +69,8 @@ def transform_response(
 
     if is_error(results):
         return response
-    else:
-        return make_response(jsonify(func(results)), 200)
+
+    return make_response(jsonify(func(results)), 200)
 
 
 def concat_responses(responses: list[Response]) -> Response:
