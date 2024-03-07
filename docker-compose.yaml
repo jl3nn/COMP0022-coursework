@@ -49,8 +49,8 @@ services:
     ports:
       - "5555:5555"
     networks:
-      - devops
       - backend
+      - devops
     depends_on:
       - movielens-db
       - personality-db
@@ -145,10 +145,10 @@ services:
       - devops
 
 volumes:
-  personality_db_init:
-  personality_db_data:
   movielens_db_init:
   movielens_db_data:
+  personality_db_init:
+  personality_db_data:
 
 networks:
   frontend:
