@@ -16,4 +16,4 @@ dashboards:
   folder: ''
   overwrite: true
   editMode: true
-  path: /etc/grafana/provisioning/dashboards/custom-metrics-dashboard.json  # Specify the path to the JSON file
+  path: /etc/grafana/provisioning/dashboards/custom-metrics-dashboard.json

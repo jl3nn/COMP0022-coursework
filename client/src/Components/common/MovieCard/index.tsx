@@ -110,8 +110,8 @@ const MovieCard: React.FC<MovieCardProps> = ({
     >
       {movie
         ? movie.tags
-            .slice(0, 10)
-            .map((tag, index) => <Chip key={index} label={tag} />)
+          .slice(0, 10)
+          .map((tag, index) => <Chip key={index} label={tag} />)
         : ""}
     </Stack>
   );
@@ -159,7 +159,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
           <Box sx={{ marginTop: 2, height: 300 }}>
             <ListItem disablePadding>
               <ListItemText
-                primary={"Ratings distribution"}
+                primary={"Rating Distribution"}
                 primaryTypographyProps={{
                   variant: "subtitle1",
                   fontWeight: "bold",
@@ -246,16 +246,16 @@ const MovieCard: React.FC<MovieCardProps> = ({
           </ListItem>
           {movie
             ? movie.actors.slice(0, 10).map((actor, index) => {
-                const capitalizedName = actor
-                  .split(" ")
-                  .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-                  .join(" ");
-                return (
-                  <ListItem key={index} disablePadding>
-                    <ListItemText primary={capitalizedName} />
-                  </ListItem>
-                );
-              })
+              const capitalizedName = actor
+                .split(" ")
+                .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+                .join(" ");
+              return (
+                <ListItem key={index} disablePadding>
+                  <ListItemText primary={capitalizedName} />
+                </ListItem>
+              );
+            })
             : ""}
         </List>
 
@@ -272,16 +272,16 @@ const MovieCard: React.FC<MovieCardProps> = ({
           </ListItem>
           {movie
             ? movie.directors.slice(0, 10).map((director, index) => {
-                const capitalizedName = director
-                  .split(" ")
-                  .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-                  .join(" ");
-                return (
-                  <ListItem key={index} disablePadding>
-                    <ListItemText primary={capitalizedName} />
-                  </ListItem>
-                );
-              })
+              const capitalizedName = director
+                .split(" ")
+                .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+                .join(" ");
+              return (
+                <ListItem key={index} disablePadding>
+                  <ListItemText primary={capitalizedName} />
+                </ListItem>
+              );
+            })
             : ""}
         </List>
       </Box>

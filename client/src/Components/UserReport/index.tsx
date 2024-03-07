@@ -32,9 +32,8 @@ function UserReportPage() {
   useEffect(() => {
     const calculateSkew = async () => {
       try {
-        const apiUrl = `http://localhost:5555/${
-          genre ? "genres" : "movies"
-        }/user-preferences`;
+        const apiUrl = `http://localhost:5555/${genre ? "genres" : "movies"
+          }/user-preferences`;
 
         const response = await fetch(apiUrl, {
           method: "POST",

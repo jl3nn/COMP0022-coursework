@@ -49,8 +49,7 @@
               }
             ]
           },
-          "unit": "bytes",
-          "unitScale": true
+          "unit": "bytes"
         },
         "overrides": []
       },
@@ -76,7 +75,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "10.3.3",
+      "pluginVersion": "10.4.0",
       "targets": [
         {
           "datasource": {
@@ -85,7 +84,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "process_virtual_memory_bytes{job=\"database\"}",
+          "expr": "process_virtual_memory_bytes{job=\"movielens-db\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -153,8 +152,7 @@
                 "value": 80
               }
             ]
-          },
-          "unitScale": true
+          }
         },
         "overrides": []
       },
@@ -185,7 +183,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "pg_stat_activity_count{instance=\"postgres-exporter:9187\"}",
+          "expr": "pg_stat_activity_count{instance=\"movielens-postgres-exporter:9187\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -253,8 +251,7 @@
                 "value": 80
               }
             ]
-          },
-          "unitScale": true
+          }
         },
         "overrides": []
       },
@@ -285,7 +282,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "pg_stat_database_tup_fetched{datid=\"16384\",datname=\"comp0022\"}",
+          "expr": "pg_stat_database_tup_fetched{instance=\"movielens-postgres-exporter:9187\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -326,8 +323,7 @@
               }
             ]
           },
-          "unit": "bytes",
-          "unitScale": true
+          "unit": "bytes"
         },
         "overrides": []
       },
@@ -353,7 +349,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "10.3.3",
+      "pluginVersion": "10.4.0",
       "targets": [
         {
           "datasource": {
@@ -430,8 +426,7 @@
                 "value": 80
               }
             ]
-          },
-          "unitScale": true
+          }
         },
         "overrides": []
       },
@@ -530,8 +525,7 @@
                 "value": 80
               }
             ]
-          },
-          "unitScale": true
+          }
         },
         "overrides": []
       },
@@ -603,8 +597,7 @@
               }
             ]
           },
-          "unit": "bytes",
-          "unitScale": true
+          "unit": "bytes"
         },
         "overrides": []
       },
@@ -630,7 +623,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "10.3.3",
+      "pluginVersion": "10.4.0",
       "targets": [
         {
           "datasource": {
@@ -707,8 +700,7 @@
                 "value": 80
               }
             ]
-          },
-          "unitScale": true
+          }
         },
         "overrides": []
       },
@@ -807,8 +799,7 @@
                 "value": 80
               }
             ]
-          },
-          "unitScale": true
+          }
         },
         "overrides": []
       },
@@ -880,8 +871,7 @@
               }
             ]
           },
-          "unit": "bytes",
-          "unitScale": true
+          "unit": "bytes"
         },
         "overrides": []
       },
@@ -907,7 +897,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "10.3.3",
+      "pluginVersion": "10.4.0",
       "targets": [
         {
           "datasource": {
@@ -916,7 +906,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "process_virtual_memory_bytes{job=\"personality-database\"}",
+          "expr": "process_virtual_memory_bytes{job=\"personality-db\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -984,8 +974,7 @@
                 "value": 80
               }
             ]
-          },
-          "unitScale": true
+          }
         },
         "overrides": []
       },
@@ -1016,7 +1005,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "pg_stat_activity_count{job=\"personality-database\"}",
+          "expr": "pg_stat_activity_count{job=\"personality-db\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -1084,8 +1073,7 @@
                 "value": 80
               }
             ]
-          },
-          "unitScale": true
+          }
         },
         "overrides": []
       },
@@ -1157,8 +1145,7 @@
               }
             ]
           },
-          "unit": "bytes",
-          "unitScale": true
+          "unit": "bytes"
         },
         "overrides": []
       },
@@ -1184,7 +1171,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "10.3.3",
+      "pluginVersion": "10.4.0",
       "targets": [
         {
           "datasource": {
@@ -1261,8 +1248,7 @@
                 "value": 80
               }
             ]
-          },
-          "unitScale": true
+          }
         },
         "overrides": []
       },
@@ -1361,8 +1347,7 @@
                 "value": 80
               }
             ]
-          },
-          "unitScale": true
+          }
         },
         "overrides": []
       },
@@ -1421,6 +1406,6 @@
   "timezone": "",
   "title": "WebServiceOverview",
   "uid": "c4ba2f4e-567c-477f-b4e8-9306b965aaea",
-  "version": 1,
+  "version": 4,
   "weekStart": ""
 }

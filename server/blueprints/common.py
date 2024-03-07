@@ -1,19 +1,26 @@
+from enum import auto, Enum
 from flask import jsonify, make_response, Response
 from flask_caching import Cache
 import json
+import os
 import psycopg
 from typing import Any, Callable, Optional
-import os
+
+
+class Database(Enum):
+    MOVIELENS = auto()
+    PERSONALITY = auto()
+
 
 CONN_INFO = {
-    "default": {
-        "dbname": os.environ.get("DB_NAME"),
-        "user": os.environ.get("DB_USER"),
-        "password": os.environ.get("DB_PASSWORD"),
-        "host": os.environ.get("DB_HOST"),
-        "port": os.environ.get("DB_PORT"),
+    Database.MOVIELENS: {
+        "dbname": os.environ.get("MOVIELENS_DB_NAME"),
+        "user": os.environ.get("MOVIELENS_DB_USER"),
+        "password": os.environ.get("MOVIELENS_DB_PASSWORD"),
+        "host": os.environ.get("MOVIELENS_DB_HOST"),
+        "port": os.environ.get("MOVIELENS_DB_PORT"),
     },
-    "personality": {
+    Database.PERSONALITY: {
         "dbname": os.environ.get("PERSONALITY_DB_NAME"),
         "user": os.environ.get("PERSONALITY_DB_USER"),
         "password": os.environ.get("PERSONALITY_DB_PASSWORD"),
@@ -34,8 +41,8 @@ cache = Cache(config=CACHE_SETTINGS)
 
 
 @cache.memoize()
-def execute_query(query: str, params: Optional[dict], conn_name: str) -> list[tuple]:
-    with psycopg.connect(**CONN_INFO[conn_name]) as conn:
+def execute_query(query: str, params: Optional[dict], db: Database) -> list[tuple]:
+    with psycopg.connect(**CONN_INFO[db]) as conn:
         with conn.cursor() as cursor:
             cursor.execute(query, params)
             results = cursor.fetchall()
@@ -48,10 +55,10 @@ def get_response(
     query: str,
     params: Optional[dict] = None,
     func: Callable[[tuple], Any] = lambda row: row[0],
-    conn_name: str = "default",
+    db: Database = Database.MOVIELENS,
 ) -> Response:
     try:
-        results = execute_query(query, params, conn_name)
+        results = execute_query(query, params, db)
         return make_response(jsonify(list(map(func, results))), 200)
     except Exception as error:
         print(f"error: {str(error)}")
@@ -69,8 +76,8 @@ def transform_response(
 
     if is_error(results):
         return response
-    else:
-        return make_response(jsonify(func(results)), 200)
+
+    return make_response(jsonify(func(results)), 200)
 
 
 def concat_responses(responses: list[Response]) -> Response:
@@ -81,7 +88,7 @@ def concat_responses(responses: list[Response]) -> Response:
 
         if is_error(results):
             return response
-        else:
-            rows.add(frozenset(results))
 
-    return make_response(jsonify([list(row) for row in rows]), 200)
+        rows.update(results)
+
+    return make_response(jsonify(list(rows)), 200)
