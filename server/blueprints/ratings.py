@@ -1,7 +1,7 @@
 from .common import get_response, transform_response
+from flasgger import swag_from
 from flask import Blueprint, Response, request
 from typing import Callable
-from flasgger import swag_from
 
 app = Blueprint("ratings", __name__)
 
@@ -140,49 +140,51 @@ def bias(func: Callable[[bool], str]) -> str:
 
 
 @app.route("/prediction", methods=["POST"])
-@swag_from({
-    'tags': ['Prediction'],
-    'description': 'Generates a prediction for a movie rating based on user, genre, and tag biases.',
-    'parameters': [
-        {
-            'name': 'movie',
-            'in': 'body',
-            'required': True,
-            'schema': {
-              'type': 'object',
-              'properties': {
-                'movie': {'type': 'string', 'description': 'Movie title for which the prediction is requested.'},
-                'users': {
-                  'type': 'array',
-                  'items': {'type': 'integer'},
-                  'description': 'List of user IDs for bias calculation.'
-                }
-              },
-              'example': {
-                'movie': 'Inception',
-                'users': [1, 2, 3]
-              }
-            },
-            'description': 'JSON payload containing the movie title and a list of user IDs.'
-        }
-    ],
-    'responses': {
-        200: {
-            'description': 'The predicted rating for the movie based on biases.',
-            'examples': {
-                'application/json': {
-                    "averageRating": 4.5,
-                    "subsetRating": 4.2,
-                    "userBias": 0.1,
-                    "genreBias": -0.05,
-                    "tagBias": 0.02,
-                    "averageBias": 0.02,
-                    "predictedRating": 4.25
-                }
+@swag_from(
+    {
+        "tags": ["Prediction"],
+        "description": "Generates a prediction for a movie rating based on user, genre, and tag biases.",
+        "parameters": [
+            {
+                "name": "movie",
+                "in": "body",
+                "required": True,
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "movie": {
+                            "type": "string",
+                            "description": "Movie title for which the prediction is requested.",
+                        },
+                        "users": {
+                            "type": "array",
+                            "items": {"type": "integer"},
+                            "description": "List of user IDs for bias calculation.",
+                        },
+                    },
+                    "example": {"movie": "Inception", "users": [1, 2, 3]},
+                },
+                "description": "JSON payload containing the movie title and a list of user IDs.",
             }
-        }
+        ],
+        "responses": {
+            200: {
+                "description": "The predicted rating for the movie based on biases.",
+                "examples": {
+                    "application/json": {
+                        "averageRating": 4.5,
+                        "subsetRating": 4.2,
+                        "userBias": 1.05,
+                        "genreBias": 1.09,
+                        "tagBias": 1,
+                        "averageBias": 1.07,
+                        "predictedRating": 4.494,
+                    }
+                },
+            }
+        },
     }
-})
+)
 def get_prediction() -> Response:
     return transform_response(
         get_response(

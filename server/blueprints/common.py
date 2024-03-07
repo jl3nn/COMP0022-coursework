@@ -1,12 +1,12 @@
 from flask import jsonify, make_response, Response
 from flask_caching import Cache
 import json
+import os
 import psycopg
 from typing import Any, Callable, Optional
-import os
 
 CONN_INFO = {
-    "default": {
+    "movielens": {
         "dbname": os.environ.get("DB_NAME"),
         "user": os.environ.get("DB_USER"),
         "password": os.environ.get("DB_PASSWORD"),
@@ -34,8 +34,8 @@ cache = Cache(config=CACHE_SETTINGS)
 
 
 @cache.memoize()
-def execute_query(query: str, params: Optional[dict], conn_name: str) -> list[tuple]:
-    with psycopg.connect(**CONN_INFO[conn_name]) as conn:
+def execute_query(query: str, params: Optional[dict], db: str) -> list[tuple]:
+    with psycopg.connect(**CONN_INFO[db]) as conn:
         with conn.cursor() as cursor:
             cursor.execute(query, params)
             results = cursor.fetchall()
@@ -48,10 +48,10 @@ def get_response(
     query: str,
     params: Optional[dict] = None,
     func: Callable[[tuple], Any] = lambda row: row[0],
-    conn_name: str = "default",
+    db: str = "movielens",
 ) -> Response:
     try:
-        results = execute_query(query, params, conn_name)
+        results = execute_query(query, params, db)
         return make_response(jsonify(list(map(func, results))), 200)
     except Exception as error:
         print(f"error: {str(error)}")
@@ -82,6 +82,6 @@ def concat_responses(responses: list[Response]) -> Response:
         if is_error(results):
             return response
         else:
-            rows.add(frozenset(results))
+            rows.update(results)
 
-    return make_response(jsonify([list(row) for row in rows]), 200)
+    return make_response(jsonify(list(rows)), 200)

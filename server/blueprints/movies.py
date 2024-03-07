@@ -1,6 +1,6 @@
 from .common import get_response, transform_response
-from flask import Blueprint, Response, request
 from flasgger import swag_from
+from flask import Blueprint, Response, request
 
 app = Blueprint("movies", __name__)
 
@@ -49,37 +49,39 @@ def get_movies_by_user_preference(
 
 
 @app.route("/get-by-id", methods=["GET"])
-@swag_from({
-    'tags': ['Movie Details'],
-    'description': 'Retrieves detailed information for a specific movie by its ID.',
-    'parameters': [
-        {
-            'name': 'movieId',
-            'in': 'query',
-            'type': 'integer',
-            'required': True,
-            'description': 'The ID of the movie to retrieve details for.'
-        }
-    ],
-    'responses': {
-        200: {
-            'description': 'Detailed information about the specified movie, including image URL, title, year, average rating, genres, tags, individual ratings, actors, and directors.',
-            'examples': {
-                'application/json': {
-                    "imageUrl": "http://example.com/image.jpg",
-                    "title": "Inception",
-                    "year": 2010,
-                    "rating": 8.8,
-                    "genres": ["Action", "Adventure", "Sci-Fi"],
-                    "tags": ["mind-bending", "dream", "subconscious"],
-                    "ratingsList": [9, 8, 10, 7],
-                    "actors": ["Leonardo DiCaprio", "Joseph Gordon-Levitt"],
-                    "directors": ["Christopher Nolan"]
-                }
+@swag_from(
+    {
+        "tags": ["Movie Details"],
+        "description": "Retrieves detailed information for a specific movie by its ID.",
+        "parameters": [
+            {
+                "name": "movieId",
+                "in": "query",
+                "type": "integer",
+                "required": True,
+                "description": "The ID of the movie to retrieve details for.",
             }
-        }
+        ],
+        "responses": {
+            200: {
+                "description": "Detailed information about the specified movie, including image URL, title, year, average rating, genres, tags, individual ratings, actors, and directors.",
+                "examples": {
+                    "application/json": {
+                        "imageUrl": "http://example.com/image.jpg",
+                        "title": "Inception",
+                        "year": 2010,
+                        "rating": 8.8,
+                        "genres": ["Action", "Adventure", "Sci-Fi"],
+                        "tags": ["mind-bending", "dream", "subconscious"],
+                        "ratingsList": [9, 8, 10, 7],
+                        "actors": ["Leonardo DiCaprio", "Joseph Gordon-Levitt"],
+                        "directors": ["Christopher Nolan"],
+                    }
+                },
+            }
+        },
     }
-})
+)
 def get_by_id() -> Response:
     return get_response(
         """
@@ -138,85 +140,78 @@ def get_by_id() -> Response:
 
 
 @app.route("/get-search-results", methods=["POST"])
-@swag_from({
-    'tags': ['Search'],
-    'description': 'Performs a search query on movies database based on various filters like text, ratings, tags, genres, and date range. Returns a list of movies that match the criteria.',
-    'consumes': ['application/json'],
-    'parameters': [
-        {
-            'in': 'body',
-            'name': 'body',
-            'description': 'Parameters for the search query.',
-            'schema': {
-                'type': 'object',
-                'properties': {
-                        'searchText': {
-                            'type': 'string',
-                            'description': 'Text to search for in movie titles, actor names, and director names.'
+@swag_from(
+    {
+        "tags": ["Search"],
+        "description": "Performs a search query on movies database based on various filters like text, ratings, tags, genres, and date range. Returns a list of movies that match the criteria.",
+        "consumes": ["application/json"],
+        "parameters": [
+            {
+                "in": "body",
+                "name": "body",
+                "description": "Parameters for the search query.",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "searchText": {
+                            "type": "string",
+                            "description": "Text to search for in movie titles, actor names, and director names.",
                         },
-                        'ratings': {
-                            'type': 'array',
-                            'items': {
-                                'type': 'integer'
+                        "ratings": {
+                            "type": "array",
+                            "items": {"type": "integer"},
+                            "description": "Array containing minimum and maximum ratings to filter by.",
+                        },
+                        "tags": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                            "description": "List of tags to filter movies by.",
+                        },
+                        "genres": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                            "description": "List of genres to filter movies by.",
+                        },
+                        "date": {
+                            "type": "array",
+                            "items": {"type": "integer"},
+                            "description": "Array containing start and end years to filter movies by their release date.",
+                        },
+                        "numLoaded": {
+                            "type": "integer",
+                            "description": "Number of movies already loaded, used for pagination.",
+                        },
+                    },
+                },
+            }
+        ],
+        "responses": {
+            200: {
+                "description": "A list of movies that match the search criteria, along with a flag indicating if all movies have been loaded.",
+                "examples": {
+                    "application/json": {
+                        "all_loaded": False,
+                        "results": [
+                            {
+                                "imageUrl": "http://example.com/image.jpg",
+                                "title": "Inception",
+                                "year": 2010,
+                                "rating": 8.8,
+                                "movieId": 1,
                             },
-                            'description': 'Array containing minimum and maximum ratings to filter by.'
-                        },
-                        'tags': {
-                            'type': 'array',
-                            'items': {
-                                'type': 'string'
+                            {
+                                "imageUrl": "http://anotherexample.com/image.jpg",
+                                "title": "The Matrix",
+                                "year": 1999,
+                                "rating": 9.0,
+                                "movieId": 2,
                             },
-                            'description': 'List of tags to filter movies by.'
-                        },
-                        'genres': {
-                            'type': 'array',
-                            'items': {
-                                'type': 'string'
-                            },
-                            'description': 'List of genres to filter movies by.'
-                        },
-                        'date': {
-                            'type': 'array',
-                            'items': {
-                                'type': 'integer'
-                            },
-                            'description': 'Array containing start and end years to filter movies by their release date.'
-                        },
-                        'numLoaded': {
-                            'type': 'integer',
-                            'description': 'Number of movies already loaded, used for pagination.'
-                        }
+                        ],
                     }
+                },
             }
-        }
-    ],
-    'responses': {
-        200: {
-            'description': 'A list of movies that match the search criteria, along with a flag indicating if all movies have been loaded.',
-            'examples': {
-                'application/json': {
-                    "all_loaded": False,
-                    "results": [
-                        {
-                            "imageUrl": "http://example.com/image.jpg",
-                            "title": "Inception",
-                            "year": 2010,
-                            "rating": 8.8,
-                            "movieId": 1
-                        },
-                        {
-                            "imageUrl": "http://anotherexample.com/image.jpg",
-                            "title": "The Matrix",
-                            "year": 1999,
-                            "rating": 9.0,
-                            "movieId": 2
-                        }
-                    ]
-                }
-            }
-        }
+        },
     }
-}
 )
 def get_search_results() -> Response:
     search_text = request.json.get("searchText", "")
@@ -343,48 +338,46 @@ def get_search_results() -> Response:
 
 
 @app.route("/user-preferences", methods=["POST"])
-@swag_from({
-    'tags': ['User Preferences'],
-    'description': 'Retrieves movies based on user preference indicated by the opinion value. Opinion values correspond to different rating preferences.',
-    'parameters': [
-        {
-            'name': 'opinion',
-            'in': 'body',
-            'schema': {
-                'type': 'object',
-                'properties': {
-                    'opinion': {
-                        'type': 'integer',
-                        'description': 'User opinion indicating preference. 1 for high-rated (4 to 5), 2 for low-rated (0 to 2), any other value for mid-range rated (2 to 4) movies.'
-                    }
-                },
-                'required': ['opinion'],
-                'example': {'opinion': 1}
-            },
-            'required': True,
-            'description': 'JSON payload containing the user opinion on movie ratings.'
-        }
-    ],
-    'responses': {
-        200: {
-            'description': 'A list of movies filtered by user preference based on the opinion provided.',
-            'examples': {
-                'application/json': [
-                    {
-                        "movieId": 1,
-                        "title": "Highly Rated Movie",
-                        "rating": 4.5
+@swag_from(
+    {
+        "tags": ["User Preferences"],
+        "description": "Retrieves movies based on user preference indicated by the opinion value. Opinion values correspond to different rating preferences.",
+        "parameters": [
+            {
+                "name": "opinion",
+                "in": "body",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "opinion": {
+                            "type": "integer",
+                            "description": "User opinion indicating preference. 1 for high-rated (4 to 5), 2 for low-rated (0 to 2), any other value for mid-range rated (2 to 4) movies.",
+                        }
                     },
-                    {
-                        "movieId": 2,
-                        "title": "Another Highly Rated Movie",
-                        "rating": 4.7
-                    }
-                ]
+                    "required": ["opinion"],
+                    "example": {"opinion": 1},
+                },
+                "required": True,
+                "description": "JSON payload containing the user opinion on movie ratings.",
             }
-        }
+        ],
+        "responses": {
+            200: {
+                "description": "A list of movies filtered by user preference based on the opinion provided.",
+                "examples": {
+                    "application/json": [
+                        {"movieId": 1, "title": "Highly Rated Movie", "rating": 4.5},
+                        {
+                            "movieId": 2,
+                            "title": "Another Highly Rated Movie",
+                            "rating": 4.7,
+                        },
+                    ]
+                },
+            }
+        },
     }
-})
+)
 def get_user_preferences() -> Response:
     opinion = request.json.get("opinion", 0)
 
